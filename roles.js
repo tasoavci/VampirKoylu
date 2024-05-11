@@ -2,7 +2,7 @@ export const characters = [
     {
         "id": 1,
         "type": "Villager",
-        "image": "villager.png",
+        "image": "/villager.png",
         "name": "Köylü",
         "duties": [],
         "description": "Basit bir köylü, hayatta kalmaya çalışıyor.",
@@ -13,7 +13,7 @@ export const characters = [
     {
         "id": 2,
         "type": "Doctor",
-        "image": "doctor.png",
+        "image": "/doctor.png",
         "name": "Doktor",
         "duties": ["Her gece bir kişiyi koru"],
         "description": "Her gece bir kişiyi vampirlerin saldırılarından koruyabilir.",
@@ -24,7 +24,7 @@ export const characters = [
     {
         "id": 3,
         "type": "Vampire",
-        "image": "vampire.png",
+        "image": "/vampire.png",
         "name": "Vampir",
         "duties": ["Her gece bir köylüyü öldür"],
         "description": "Geceleyin köylüleri beslenmek için öldürür.",
@@ -35,7 +35,7 @@ export const characters = [
     {
         "id": 4,
         "type": "Jester",
-        "image": "jester.png",
+        "image": "/jester.png",
         "name": "Soytarı",
         "duties": ['Kendini astırmaya çalış'],
         "description": "Tarafsızdır, sadece karışıklık yaratır ve kendini oylamada astırmaya çalışır.",

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2'
 import { characters } from './../roles'
+import Image from 'next/image';
 
 function Day() {
     const router = useRouter();
@@ -19,7 +20,25 @@ function Day() {
     const [targetToKill, setTargetToKill] = useState([]);
     const [targetToSave, setTargetToSave] = useState(null);
     const [vampireVotes, setVampireVotes] = useState({});
-    const [gameOver, setGameOver] = useState(false)
+    const playerRoles = players.filter(player => player.role !== 'Skip').map(player => {
+        let color;
+        switch (player.role) {
+            case 'Vampire':
+                color = 'red';
+                break;
+            case 'Doctor':
+            case 'Villager':
+                color = 'green';
+                break;
+            case 'Jester':
+                color = 'blue';
+                break;
+            default:
+                color = 'black';
+        }
+        return `<li>${player.name}: <span style="color: ${color};">${player.role}</span></li>`;
+    }).join('');
+
 
     useEffect(() => {
         if (currentPlayer.role === 'Skip') {
@@ -122,7 +141,10 @@ function Day() {
                 if (player.role === "Jester") {
                     Swal.fire({
                         title: 'Gündüz Olayları',
-                        html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;"><img src="/jester.png" style="width:100px; height:100px;"><p>${player.name} oy birliğiyle öldürüldü ama soytarı olduğu için kazandı.</p></div>`,
+                        html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                        <img src="/jester.png" style="width:100px; height:100px;">
+                        <p>${player.name} oy birliğiyle öldürüldü ama soytarı olduğu için kazandı.</p>
+                        </div>`,
                         confirmButtonText: 'Tamam',
                     })
                 } else {
@@ -139,7 +161,11 @@ function Day() {
         if (gameResult) {
             Swal.fire({
                 title: 'Oyun Sonu',
-                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;"><img src="/villager.png" style="width:100px; height:100px;"><p>${gameResult}</p></div>`,
+                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                <img src="/villager.png" style="width:100px; height:100px;">
+                <p>${gameResult}</p>
+                <ul>${playerRoles}</ul>
+                </div>`,
                 confirmButtonText: 'Tamam',
             });
             router.push('/');
@@ -202,7 +228,11 @@ function Day() {
                         // })
                         Swal.fire({
                             title: 'Oyun Sonu',
-                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;"><img src="/vampire.png" style="width:100px; height:100px;"><p>${gameResult}</p></div>`,
+                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                            <img src="/vampire.png" style="width:100px; height:100px;">
+                            <p>${gameResult}</p>
+                            <ul>${playerRoles}</ul>
+                            </div>`,
                             confirmButtonText: 'Tamam',
                         });
                         router.push('/')
@@ -233,7 +263,11 @@ function Day() {
                         // })
                         Swal.fire({
                             title: 'Oyun Sonu',
-                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;"><img src="/vampire.png" style="width:100px; height:100px;"><p>${gameResult}</p></div>`,
+                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                            <img src="/vampire.png" style="width:100px; height:100px;">
+                            <p>${gameResult}</p>
+                            <ul>${playerRoles}</ul>
+                            </div>`,
                             confirmButtonText: 'Tamam',
                         });
                         router.push('/')
@@ -286,7 +320,7 @@ function Day() {
         <div className={`min-h-screen flex flex-col items-center justify-center py-10 ${isNight ? 'bg-black' : 'bg-blue-200'}`}>
             {!isNight ? (
                 <>
-                    <img className='h-20 w-20 mb-5' src='/sunny.png' alt='sun' />
+                    <Image height={80} width={80} className='h-20 w-20 mb-5' src='/sunny.png' alt='sun' />
                     <h1 className="text-2xl font-bold mb-4">Gündüz Vakti - Oylama</h1>
                     <h1 className="text-2xl font-bold mb-4">{currentDay}. gün</h1>
                     {players[currentVoterIndex].role !== 'Skip' &&
@@ -308,19 +342,19 @@ function Day() {
                         {players.map((player, index) => (
                             <div key={player.name} className='bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center'>
                                 {player.role !== 'Skip' && player.isAlive &&
-                                    <img src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                    <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                 }
                                 {player.role !== 'Skip' && !player.isAlive &&
-                                    <img src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                    <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                 }
                                 {player.role === 'Skip' &&
-                                    <img src={`/voting-box.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                    <Image height={96} width={96} src={`/voting-box.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                 }
                                 <h3 className='text-white text-lg'>{player.name}</h3>
                                 <button
                                     onClick={() => handleVote(player.name)}
                                     disabled={!player.isAlive || index === currentVoterIndex || players[currentVoterIndex].role === 'Skip'}
-                                    className={`${!player.isAlive || index === currentVoterIndex || players[currentVoterIndex].role === 'Skip' ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out mt-2`}>
+                                    className={`${index === currentVoterIndex || players[currentVoterIndex].role === 'Skip' ? 'bg-blue-300/80 cursor-not-allowed' : 'bg-blue-500 '} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out mt-2 ${!player.isAlive ? 'bg-red-500/20' : ''}`}>
                                     {player.role !== 'Skip' ? 'Oy Ver' : ''} ({votes[player.name] || 0} Oy)
                                 </button>
                             </div>
@@ -347,7 +381,7 @@ function Day() {
             ) : (
                 <>
                     <div className="flex flex-col items-center justify-center min-h-screen text-white m-10 w-full">
-                        <img className='h-20 w-20 mb-5' src='/moon.png' alt='moon' />
+                        <Image height={80} width={80} className='h-20 w-20 mb-5' src='/moon.png' alt='moon' />
                         <div className='mb-10 text-center text-gray-500'>
                             <h1 className="text-2xl font-bold mb-4">Gece Vakti - Görevler</h1>
                             <h1 className="text-2xl font-bold mb-4">{currentDay}. gece</h1>
@@ -367,23 +401,23 @@ function Day() {
                             <>
                                 <div>
                                     <h1 className='text-red-500 text-2xl text-center'>{characters[2].name}</h1>
-                                    <img className='h-20 w-20 rounded-full' src={characters[2].image} alt={characters[2].type} />
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[2].image} alt={characters[2].type} />
                                 </div>
                                 <h3 className="my-2">Birini öldür:</h3>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.role !== 'Vampire' && player.isAlive &&
-                                                <img src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role === 'Vampire' && player.isAlive &&
-                                                <img src={`/vampire.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/vampire.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role === 'Vampire' && !player.isAlive &&
-                                                <img src={`/coffin.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/coffin.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {!player.isAlive && player.role !== 'Vampire' &&
-                                                < img src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             <button key={index}
                                                 onClick={() => handleVampireKill(index)}
@@ -400,7 +434,7 @@ function Day() {
                             <>
                                 <div>
                                     <h1 className='text-green-500 text-2xl text-center'>{characters[1].name}</h1>
-                                    <img className='h-20 w-20 rounded-full' src={characters[1].image} alt={characters[1].type} />
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[1].image} alt={characters[1].type} />
                                 </div>
                                 {!currentPlayer.isSelfHealed &&
                                     <h1 className='text-xl my-2 text-green-500 text-center'>Kendini koruma hakkı: 1</h1>
@@ -413,13 +447,13 @@ function Day() {
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.role !== 'Doctor' && player.isAlive &&
-                                                <img src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && player.role !== 'Doctor' && !player.isAlive &&
-                                                <img src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role == 'Doctor' && player.isAlive &&
-                                                <img src={`/doctor.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/doctor.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             <button key={index}
                                                 onClick={() => handleDoctorSave(index)}
@@ -436,17 +470,17 @@ function Day() {
                             <>
                                 <div className='flex items-center justify-center flex-col'>
                                     <h1 className='text-blue-500 text-2xl text-center'>{characters[3].name}</h1>
-                                    <img className='h-20 w-20 rounded-full' src={characters[3].image} alt={characters[3].type} />
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[3].image} alt={characters[3].type} />
                                     <h2 className='text-center text-lg mx-5'>Gece yapacak bir görevin olmadığı için aşağıda işlevsiz tuşlar var bas da anlaşılmasın soytarı olduğun</h2>
                                 </div>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.isAlive &&
-                                                <img src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && !player.isAlive &&
-                                                <img src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             <button key={index}
                                                 disabled={player.role === 'Skip'}
@@ -463,17 +497,17 @@ function Day() {
                             <>
                                 <div className='flex items-center justify-center flex-col'>
                                     <h1 className='text-green-500 text-2xl text-center'>{characters[0].name}</h1>
-                                    <img className='h-20 w-20 rounded-full' src={characters[0].image} alt={characters[0].type} />
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[0].image} alt={characters[0].type} />
                                     <h2 className='text-center text-lg mx-5'>Gece yapacak bir görevin olmadığı için aşağıda işlevsiz tuşlar var bas da anlaşılmasın köylü olduğun</h2>
                                 </div>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.isAlive &&
-                                                <img src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && !player.isAlive &&
-                                                <img src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             <button key={index}
                                                 disabled={player.role === 'Skip'}
@@ -493,7 +527,7 @@ function Day() {
                                     onClick={handleNextPlayer}
                                     className="bg-blue-500 hover:bg-blue-700 gap-1 flex items-center justify-center flex-col text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-300 focus:outline-none"
                                 >
-                                    <img src='/sunny.png' alt='sun' className='h-20 w-20 ' />
+                                    <Image height={80} width={80} src='/sunny.png' alt='sun' className='h-20 w-20 ' />
                                     Sabaha Geç
                                 </button>
                             </div>

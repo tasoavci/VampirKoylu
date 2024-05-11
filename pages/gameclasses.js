@@ -71,8 +71,8 @@ export class Game {
     assignRoles(playerNames, includeJester) {
         const roles = [];
         const numVampires = playerNames.length >= 9 ? 2 : 1;
-        const numDoctors = 1; // Her zaman 1 doktor
-        const numJesters = includeJester ? (playerNames.length >= 8 ? 1 : 0) : 0;
+        const numDoctors = 1;
+        const numJesters = includeJester ? 1 : 0;
         const numVillagers = (playerNames.length - 1) - (numVampires + numDoctors + numJesters);
 
         for (let i = 0; i < numVampires; i++) {

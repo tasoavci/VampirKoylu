@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { characters } from '../roles';
+import Image from 'next/image';
 
 function RoleReveal() {
     const router = useRouter();
@@ -48,7 +49,7 @@ function RoleReveal() {
                             </div>
                         }
                         {show && <div>
-                            <img src={currentCharacter.image} alt={currentCharacter.name} className="mx-auto h-40 w-40 object-cover rounded-full mb-4" />
+                            <Image width={160} height={160} src={currentCharacter.image} alt={currentCharacter.name} className="mx-auto h-40 w-40 object-cover rounded-full mb-4" />
                             <p className="text-lg mb-2">Rolün: {currentCharacter.name}</p>
                             <p className="text-sm mb-2" style={{ color: currentCharacter.sidecolor }}>{currentCharacter.description}</p>
                             {currentPlayer.role === 'Vampire' && vampireTeam.length > 1 && (

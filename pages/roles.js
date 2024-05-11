@@ -1,6 +1,7 @@
 import React from 'react';
 import { characters } from './../roles'
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 function Roles() {
     const router = useRouter()
@@ -20,7 +21,7 @@ function Roles() {
             {characters.filter(character => character.type !== 'Skip').map(character => (
                 <div key={character.id} className='flex flex-col md:flex-row bg-gray-700 rounded-lg shadow-lg p-4 items-center justify-between w-full max-w-4xl'>
                     <div className='flex flex-col items-center md:flex-row md:items-start gap-4'>
-                        <img className='h-20 w-20 rounded-full' src={character.image} alt={character.name} />
+                        <Image height={80} width={80} className='h-20 w-20 rounded-full' src={character.image} alt={character.name} />
                         <div>
                             <h2 className='text-white text-lg font-bold text-center'>{character.name} <span className={`text-${character.sidecolor}-500`}>({character.side})</span> </h2>
                             <p className='text-gray-300 text-center my-1'>{character.description}</p>
