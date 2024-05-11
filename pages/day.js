@@ -314,7 +314,9 @@ function Day() {
         handleNextPlayer();
 
     };
-
+    if (!currentPlayer) {
+        return <div>Loading or no player data available...</div>;
+    }
 
     return (
         <div className={`min-h-screen flex flex-col items-center justify-center py-10 ${isNight ? 'bg-black' : 'bg-blue-200'}`}>

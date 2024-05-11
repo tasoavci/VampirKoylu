@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 function RoleReveal() {
     const router = useRouter();
-    const { players } = router.query;
+    const { players = "[]" } = router.query;
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [show, setShow] = useState(false);
@@ -14,9 +14,13 @@ function RoleReveal() {
     const [night, setNight] = useState(1)
     const [gameOver, setGameOver] = useState(false)
     useEffect(() => {
-        if (players) {
-            const parsedPlayers = JSON.parse(players);
-            setCurrentPlayer(parsedPlayers[currentIndex]);
+        if (players && players !== 'undefined') {
+            try {
+                const parsedPlayers = JSON.parse(players);
+                setCurrentPlayer(parsedPlayers[currentIndex]);
+            } catch (error) {
+                console.error("Parsing error:", error);
+            }
         }
     }, [players, currentIndex]);
 
