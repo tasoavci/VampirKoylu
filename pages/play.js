@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import StartGameForm from "./StartGameForm";
-import { Game } from './gameclasses';
+import { Game } from '../components/gameclasses';
 
 export default function Play() {
     const router = useRouter();
