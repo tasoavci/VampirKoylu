@@ -43,7 +43,7 @@ function StartGameForm({ onStartGame }) {
                     onChange={handlePlayerCountChange}
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                    {[5, 6, 7, 8, 9, 10].map(count => (
+                    {[5, 6, 7, 8, 9, 10, 11].map(count => (
                         <option key={count} value={count}>{count}</option>
                     ))}
                 </select>

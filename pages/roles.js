@@ -16,6 +16,9 @@ function Roles() {
                     <li>6 kişi: 1 Vampir, 1 Doktor, 4 Köylü</li>
                     <li>7 kişi: 1 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 4 Köylü</li>
                     <li>8 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 4 Köylü</li>
+                    <li>9 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 5 Köylü</li>
+                    <li>10 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 6 Köylü</li>
+                    <li>11 kişi: 3 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 6 Köylü</li>
                 </ul>
             </div>
             {characters.filter(character => character.type !== 'Skip').map(character => (

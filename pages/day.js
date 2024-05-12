@@ -99,7 +99,6 @@ function Day() {
     const handleVote = (name) => {
         setVotes(prevVotes => {
             const updatedVotes = { ...prevVotes, [name]: (prevVotes[name] || 0) + 1 };
-            console.log(updatedVotes)
             if (currentVoterIndex < players.length - 1) {
                 setCurrentVoterIndex(currentVoterIndex + 1);
             } else {
@@ -143,7 +142,7 @@ function Day() {
                         title: 'Gündüz Olayları',
                         html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                         <img src="/jester.png" style="width:100px; height:100px;">
-                        <p>${player.name} oy birliğiyle öldürüldü ama soytarı olduğu için kazandı.</p>
+                        <p>${player.name} oy birliğiyle öldürüldü ve soytarı olduğu için kazandı.</p>
                         </div>`,
                         confirmButtonText: 'Tamam',
                     })
@@ -164,6 +163,7 @@ function Day() {
                 html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                 <img src="/villager.png" style="width:100px; height:100px;">
                 <p>${gameResult}</p>
+                <p>Gün Sayısı: ${currentDay}</p>
                 <ul>${playerRoles}</ul>
                 </div>`,
                 confirmButtonText: 'Tamam',
@@ -231,6 +231,7 @@ function Day() {
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                             <img src="/vampire.png" style="width:100px; height:100px;">
                             <p>${gameResult}</p>
+                            <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
                             </div>`,
                             confirmButtonText: 'Tamam',
@@ -266,6 +267,7 @@ function Day() {
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                             <img src="/vampire.png" style="width:100px; height:100px;">
                             <p>${gameResult}</p>
+                            <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
                             </div>`,
                             confirmButtonText: 'Tamam',
@@ -281,7 +283,6 @@ function Day() {
         }
 
 
-        console.log(nightMessage)
         setIsNight(false);
         setCurrentPlayerIndex(0);
         setCurrentDay(currentDay + 1);
@@ -292,7 +293,6 @@ function Day() {
 
     const handleVampireKill = (targetIndex) => {
         setTargetToKill(prev => [...prev, targetIndex]);
-        console.log(targetToKill)
         setVampireVotes(prevVotes => ({
             ...prevVotes,
             [targetIndex]: (prevVotes[targetIndex] || 0) + 1
@@ -315,7 +315,7 @@ function Day() {
 
     };
     if (!currentPlayer) {
-        return <div>Loading or no player data available...</div>;
+        return <div>Yukleniyor...</div>;
     }
 
     return (
@@ -408,7 +408,21 @@ function Day() {
                                 <h3 className="my-2">Birini öldür:</h3>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
-                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
+                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center `}>
+                                            {player.role === 'Skip' &&
+                                                <div className='relative'>
+                                                    <Image height={96} width={96} src={`/bloody.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+
+                                                    <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                                                        <svg className="w-full h-full rounded-full text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1}>
+                                                            <line x1="1" y1="1" x2="23" y2="23" />
+                                                            <line x1="23" y1="1" x2="1" y2="23" />
+                                                        </svg>
+                                                    </div>
+
+                                                </div>
+
+                                            }
                                             {player.role !== 'Skip' && player.role !== 'Vampire' && player.isAlive &&
                                                 <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
@@ -421,10 +435,18 @@ function Day() {
                                             {!player.isAlive && player.role !== 'Vampire' &&
                                                 <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
+
                                             <button key={index}
                                                 onClick={() => handleVampireKill(index)}
                                                 disabled={!player.isAlive || index === currentPlayerIndex || player.role === 'Vampire'}
-                                                className={`${index === currentPlayerIndex || player.role === 'Vampire' ? 'bg-gray-700 text-red-500' : 'bg-red-500 text-white'} ${!player.isAlive ? 'bg-gray-500/80 text-gray-400' : ''}  min-w-40  font-bold py-2 px-4 rounded my-2 w-full`}>
+                                                // className={`${index === currentPlayerIndex || player.role === 'Vampire' ? 'bg-gray-700 text-red-500' : 'bg-red-500 text-white'} ${!player.isAlive ? 'bg-gray-500/80 text-gray-400' : ''}  ${player.role === 'Skip' ? 'text-sm' : ''}  min-w-40  font-bold py-2 px-4 rounded my-2 w-full`}
+                                                className={`min-w-40 font-bold py-2 px-4 rounded my-2 w-full
+            ${!player.isAlive ? 'bg-gray-500/80 text-gray-400' :
+                                                        `${index === currentPlayerIndex || player.role === 'Vampire' ? 'bg-gray-700 text-red-500' : 'bg-red-500 text-white'}
+              ${player.role === 'Skip' ? 'text-sm' : ''}`
+                                                    }`}
+                                            >
+
                                                 {player.role === 'Skip' ? 'Kimseyi öldürme' : player.name}{vampireVotes[index] ? ` (${vampireVotes[index]} oy)` : ''}{!player.isAlive ? ' (Ölü)' : ''}
                                             </button>
                                         </div>

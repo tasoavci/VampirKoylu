@@ -6,10 +6,8 @@ export default function Play() {
     const router = useRouter();
 
     const handleFormSubmit = (playerNames, includeJester) => {
-        console.log(includeJester)
         const game = new Game(playerNames, includeJester);
         const playersWithRoles = game.players;
-        console.log(playersWithRoles)
 
         router.push({
             pathname: '/reveal',
