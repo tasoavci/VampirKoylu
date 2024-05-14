@@ -23,6 +23,28 @@ export const characters = [
     },
     {
         "id": 3,
+        "type": "Scout",
+        "image": "/boy-scout.png",
+        "name": "İzci",
+        "duties": ['Her gece birisini izle'],
+        "description": "Her gece seçtiği birisini izler.",
+        "description2": "Seçtiği kişinin o gece kime gittiğini öğrenir ve köy halkına söyler.",
+        "side": "köy",
+        "sidecolor": `green`
+    },
+    {
+        "id": 4,
+        "type": "Sheriff",
+        "image": "/sheriff.png",
+        "name": "Şerif",
+        "duties": ['Rol öğren'],
+        "description": "Seçtiği kişinin rolünü öğrenir.",
+        "description2": "Özelliğini yalnızca 2 kere kullanabilir.",
+        "side": "köy",
+        "sidecolor": `green`
+    },
+    {
+        "id": 5,
         "type": "Vampire",
         "image": "/vampire.png",
         "name": "Vampir",
@@ -33,7 +55,7 @@ export const characters = [
         "sidecolor": `red`
     },
     {
-        "id": 4,
+        "id": 6,
         "type": "Jester",
         "image": "/jester.png",
         "name": "Soytarı",
@@ -44,7 +66,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 5,
+        "id": 7,
         "type": "Survivor",
         "image": "/survivor.png",
         "name": "Survivor",
@@ -55,7 +77,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 5,
+        "id": 8,
         "type": "Skip",
         "image": "jester.png",
         "name": "Boş Oy",

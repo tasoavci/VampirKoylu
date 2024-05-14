@@ -8,11 +8,16 @@ export default function Home() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-800 text-white'>
       <div className='mb-16'>
-        <div className='grid grid-cols-2 border-2 bg-gray-700 border-black rounded-full overflow-hidden'>
-          <Image priority width={96} height={96} src="/vampire.png" alt="Oyun Logo" className="w-24 h-24" />
+        <div className='grid grid-cols-3 border-2 bg-gray-700 grid-wrap border-black rounded-full overflow-hidden'>
+          <Image priority width={96} height={96} src="/boy-scout.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/villager.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/doctor.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/jester.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/vampire.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/survivor.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/villager.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/sheriff.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/villager.png" alt="Oyun Logo" className="w-24 h-24" />
         </div>
         <h1 className='text-2xl tracking-wider w-full flex items-center justify-center mt-1'><span className='text-red-500'>Vampir</span>&<span className='text-green-500'>Köylü</span></h1>
       </div>
