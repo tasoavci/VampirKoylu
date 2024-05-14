@@ -6,13 +6,15 @@ function StartGameForm({ onStartGame }) {
     const [playerNames, setPlayerNames] = useState(Array(5).fill(''));
     const [numVampires, setNumVampires] = useState(playerCount >= 11 ? 3 : (playerCount >= 8 ? 2 : 1))
     const [numDoctor, setNumDoctor] = useState(1)
+    const [numSheriff, setNumSheriff] = useState(0)
     const [numNeutral, setNumNeutral] = useState(playerCount >= 7 ? 1 : 0)
     const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor))
     const router = useRouter()
+
     useEffect(() => {
-        neutralUpdate()
+        // neutralUpdate()
         updateVillagerCount()
-    }, [numDoctor, numNeutral, numVampires, playerCount])
+    }, [numDoctor, numNeutral, numVampires, numSheriff, playerCount])
     const handlePlayerCountChange = event => {
         const count = parseInt(event.target.value, 10);
         console.log(count)
@@ -23,7 +25,7 @@ function StartGameForm({ onStartGame }) {
         updateVillagerCount()
     };
     const updateVillagerCount = () => {
-        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral));
+        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff));
     };
     const neutralUpdate = () => {
         setNumNeutral(playerCount >= 7 ? 1 : 0)
@@ -45,10 +47,13 @@ function StartGameForm({ onStartGame }) {
     const handleNeutralChange = event => {
         setNumNeutral(parseInt(event.target.value, 10));
     };
+    const handleSheriffChange = event => {
+        setNumSheriff(parseInt(event.target.value, 10));
+    };
 
     const handleSubmit = event => {
         event.preventDefault();
-        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral);
+        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral, numSheriff);
 
     };
 
@@ -112,8 +117,23 @@ function StartGameForm({ onStartGame }) {
                     onChange={handleDoctorChange}
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
-                    {[0, 1, 2].map(doctorCount => (
+                    {[0, 1].map(doctorCount => (
                         <option key={doctorCount} value={doctorCount}>{doctorCount}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="mb-4">
+                <label htmlFor="numSheriff" className="block text-green-700 text-sm font-bold mb-2">
+                    Muhtar Sayısı:
+                </label>
+                <select
+                    id="numSheriff"
+                    value={numSheriff}
+                    onChange={handleSheriffChange}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                    {[0, 1].map(sheriffCount => (
+                        <option key={sheriffCount} value={sheriffCount}>{sheriffCount}</option>
                     ))}
                 </select>
             </div>
@@ -135,7 +155,7 @@ function StartGameForm({ onStartGame }) {
                 </div>
             }
             <div className='flex items-center justify-center my-2'>
-                <h1 className='text-gray-800 text-center text-lg'>Köylü sayısı: <span className='text-green-700'>{numVillager}</span></h1>
+                <h1 className='text-gray-800 text-center text-lg'>Düz köylü sayısı: <span className='text-green-700'>{numVillager}</span></h1>
             </div>
 
             <button type="submit" className="bg-blue-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">

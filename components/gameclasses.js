@@ -63,20 +63,23 @@ export class Jester extends Character {
 
 
 export class Game {
-    constructor(playerNames, numVampires, numDoctor, numNeutral) {
-        this.players = this.assignRoles(playerNames, numVampires, numDoctor, numNeutral);
+    constructor(playerNames, numVampires, numDoctor, numNeutral, numSheriff) {
+        this.players = this.assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff);
         this.isNight = false;
     }
 
-    assignRoles(playerNames, numVampires, numDoctor, numNeutral) {
+    assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff) {
         const roles = [];
-        const numVillagers = (playerNames.length - 1) - (numVampires + numDoctor + numNeutral);
+        const numVillagers = (playerNames.length - 1) - (numVampires + numDoctor + numNeutral + numSheriff);
 
         for (let i = 0; i < numVampires; i++) {
             roles.push('Vampire');
         }
         for (let i = 0; i < numDoctor; i++) {
             roles.push('Doctor');
+        }
+        for (let i = 0; i < numSheriff; i++) {
+            roles.push('Sheriff');
         }
         for (let i = 0; i < numNeutral; i++) {
             const role = Math.random() < 0.5 ? 'Jester' : 'Survivor';
@@ -103,6 +106,8 @@ export class Game {
                 isAlive: true,
                 isSelfHealed: false,
                 survivorVest: 2,
+                sheriffLookout: 2,
+                roleKnownBySheriff: false
             };
         });
     }

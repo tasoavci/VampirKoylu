@@ -36,7 +36,7 @@ export const characters = [
         "id": 4,
         "type": "Sheriff",
         "image": "/sheriff.png",
-        "name": "Şerif",
+        "name": "Muhtar",
         "duties": ['Rol öğren'],
         "description": "Seçtiği kişinin rolünü öğrenir.",
         "description2": "Özelliğini yalnızca 2 kere kullanabilir.",

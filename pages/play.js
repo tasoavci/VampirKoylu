@@ -5,8 +5,8 @@ import { Game } from '../components/gameclasses';
 export default function Play() {
     const router = useRouter();
 
-    const handleFormSubmit = (playerNames, numVampires, numDoctor, numNeutral) => {
-        const game = new Game(playerNames, numVampires, numDoctor, numNeutral);
+    const handleFormSubmit = (playerNames, numVampires, numDoctor, numNeutral, numSheriff) => {
+        const game = new Game(playerNames, numVampires, numDoctor, numNeutral, numSheriff);
         const playersWithRoles = game.players;
 
         router.push({

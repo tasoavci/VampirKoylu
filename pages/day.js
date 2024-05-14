@@ -391,10 +391,84 @@ function Day() {
         }
         handleNextPlayer()
     }
+    const handleSheriffLearn = (targetIndex) => {
+        const player = players[targetIndex]
+        if (players[currentPlayerIndex].role === 'Sheriff' && players[currentPlayerIndex].sheriffLookout > 0) {
+            setPlayers(prevPlayers =>
+                prevPlayers.map((p, idx) =>
+                    idx === currentPlayerIndex ? { ...p, sheriffLookout: p.sheriffLookout - 1 } : p
+                )
+            );
+            Swal.fire({
+                title: `<strong>Oyuncunun Rolü:</strong>`,
+                html: `<div style="color: ${getColorByRole(player.role)}; font-size: 20px;">${categorizeRole(player.role)}</div>`,
+                imageUrl: getImageByRole(player.role),
+                imageWidth: 200,
+                imageHeight: 200,
+                imageAlt: 'rol',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        }
+        player.roleKnownBySheriff = true
+        handleNextPlayer()
+    }
+    function categorizeRole(role) {
+        switch (role) {
+            case 'Doctor':
+                return 'Doktor';
+            case 'Sheriff':
+                return 'Muhtar';
+            case 'Villager':
+                return 'Köylü';
+            case 'Vampire':
+                return 'Vampir';
+            case 'Jester':
+                return 'Soytarı';
+            case 'Survivor':
+                return 'Survivor';
+            default:
+                return '';
+        }
+    }
+    function getColorByRole(role) {
+        switch (role) {
+            case 'Doctor':
+            case 'Villager':
+            case 'Sheriff':
+                return '#28a745';
+            case 'Vampire':
+                return '#dc3545';
+            case 'Jester':
+            case 'Survivor':
+                return '#007bff';
+            default:
+                return '#6c757d';
+        }
+    }
+    function getImageByRole(role) {
+        switch (role) {
+            case 'Doctor':
+                return '/doctor.png';
+            case 'Sheriff':
+                return '/sheriff.png';
+            case 'Villager':
+                return '/villager.png';
+            case 'Vampire':
+                return '/vampire.png';
+            case 'Jester':
+                return '/jester.png';
+            case 'Survivor':
+                return '/survivor.png';
+            default:
+                return '';
+        }
+    }
     if (!currentPlayer) {
         return <div>Yukleniyor...</div>;
     }
-
+    console.log(players)
     return (
         <div className={`min-h-screen flex flex-col items-center justify-center py-10 ${isNight ? 'bg-black' : 'bg-blue-200'}`}>
             {!isNight ? (
@@ -479,8 +553,8 @@ function Day() {
                         {currentPlayer.role === 'Vampire' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div>
-                                    <h1 className='text-red-500 text-2xl text-center'>{characters[2].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[2].image} alt={characters[2].type} />
+                                    <h1 className='text-red-500 text-2xl text-center'>{characters[4].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[4].image} alt={characters[4].type} />
                                 </div>
                                 <h3 className="my-2">Birini öldür:</h3>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
@@ -501,7 +575,7 @@ function Day() {
 
                                             }
                                             {player.role !== 'Skip' && player.role !== 'Vampire' && player.isAlive &&
-                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role === 'Vampire' && player.isAlive &&
                                                 <Image height={96} width={96} src={`/vampire.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
@@ -548,7 +622,7 @@ function Day() {
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.role !== 'Doctor' && player.isAlive &&
-                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && player.role !== 'Doctor' && !player.isAlive &&
                                                 <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
@@ -570,15 +644,15 @@ function Day() {
                         {currentPlayer.role === 'Jester' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div className='flex items-center justify-center flex-col'>
-                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[3].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[3].image} alt={characters[3].type} />
+                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[5].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[5].image} alt={characters[5].type} />
                                     <h2 className='text-center text-lg mx-5'>Gece yapacak bir görevin olmadığı için aşağıda işlevsiz tuşlar var bas da anlaşılmasın soytarı olduğun</h2>
                                 </div>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.isAlive &&
-                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && !player.isAlive &&
                                                 <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
@@ -605,7 +679,7 @@ function Day() {
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.isAlive &&
-                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && !player.isAlive &&
                                                 <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
@@ -625,8 +699,8 @@ function Day() {
                         {currentPlayer.role === 'Survivor' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div className='flex items-center justify-center flex-col'>
-                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[4].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[4].image} alt={characters[4].type} />
+                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[6].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[6].image} alt={characters[6].type} />
                                     {currentPlayer.survivorVest > 0 &&
                                         <h2 className='text-center text-lg mx-5 mt-2'>Kendini koru:</h2>
                                     }
@@ -655,7 +729,7 @@ function Day() {
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
                                             {player.role !== 'Skip' && player.isAlive &&
-                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
                                             }
                                             {player.role !== 'Skip' && !player.isAlive &&
                                                 <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
@@ -664,6 +738,54 @@ function Day() {
                                                 disabled={player.role === 'Skip'}
                                                 onClick={handleNextPlayer}
                                                 className={`${player.role === 'Skip' ? 'hidden' : ''} bg-blue-500 w-full min-w-40  text-white font-bold py-2 px-4 rounded my-2`}>
+                                                {player.role === 'Skip' ? '' : player.name}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </>
+                        )}
+                        {currentPlayer.role === 'Sheriff' && currentPlayer.isAlive && seeNightAction && (
+                            <>
+                                <div className='flex items-center justify-center flex-col'>
+                                    <h1 className='text-green-500 text-2xl text-center'>{characters[3].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[3].image} alt={characters[3].type} />
+                                    {currentPlayer.sheriffLookout > 0 &&
+                                        <>
+                                            <h1 className="text-lg font-semibold text-gray-700 text-center">Rol görme hakkın: <span className="text-green-600">{currentPlayer.sheriffLookout ? currentPlayer.sheriffLookout : 0}</span></h1>
+                                            <div className="flex gap-2 mt-4 text-xl items-center justify-center ">
+                                                Birinin rolünü öğren:
+                                            </div>
+                                        </>
+                                    }
+                                    {currentPlayer.sheriffLookout === 0 &&
+                                        <div className='flex flex-col items-center justify-center gap-2'>
+                                            <h1 className="text-lg font-semibold text-red-700 text-center">Rol öğrenme hakkın bitti.</h1>
+                                            <button onClick={handleNextPlayer} className='bg-green-500 px-4 py-1 text-xl rounded-lg'>Sıranı geç</button>
+                                        </div>
+                                    }
+                                </div>
+                                <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
+                                    {players.map((player, index) => (
+                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
+                                            {player.role === 'Sheriff' && player.isAlive &&
+                                                <Image height={96} width={96} src={`/sheriff.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.roleKnownBySheriff && player.isAlive &&
+                                                <Image height={96} width={96} src={getImageByRole(player.role)} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.role !== 'Skip' && player.isAlive && player.role !== 'Sheriff' && !player.roleKnownBySheriff &&
+                                                < Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+
+                                            }
+                                            {player.role !== 'Skip' && !player.isAlive &&
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            <button key={index}
+                                                disabled={player.role === 'Skip' || currentPlayerIndex === index || player.roleKnownBySheriff || players[currentPlayerIndex].sheriffLookout === 0}
+                                                onClick={() => handleSheriffLearn(index)}
+                                                className={`${player.role === 'Skip' ? 'hidden' : ''} ${`${currentPlayerIndex === index || player.roleKnownBySheriff || players[currentPlayerIndex].sheriffLookout === 0 ? 'bg-green-500/10' : ''}`} bg-green-500 w-full min-w-40 text-white font-bold py-2 px-4 rounded my-2`}>
                                                 {player.role === 'Skip' ? '' : player.name}
                                             </button>
                                         </div>

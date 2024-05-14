@@ -12,18 +12,21 @@ function Roles() {
             <div className='bg-white text-gray-800 rounded-lg p-4 shadow-xl'>
                 <h2 className='text-xl font-bold pl-[15px] mb-1'>Önerilen Rol Dağılımı:</h2>
                 <ul className='list-disc pl-8'>
-                    <li>5 kişi: 1 Vampir, 1 Doktor, 3 Köylü</li>
-                    <li>6 kişi: 1 Vampir, 1 Doktor, 4 Köylü</li>
-                    <li>7 kişi: 1 Vampir, 1 Doktor, 1 Tarafsız, 4 Köylü</li>
-                    <li>8 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 4 Köylü</li>
-                    <li>9 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 5 Köylü</li>
-                    <li>10 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 6 Köylü</li>
-                    <li>11 kişi: 3 Vampir, 1 Doktor, 1 Tarafsız, 6 Köylü</li>
+                    <li><strong>5 kişi:</strong> <span className='text-red-600'>1 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-green-600'>3 Köylü</span></li>
+                    <li><strong>6 kişi:</strong> <span className='text-red-600'>1 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-green-600'>4 Köylü</span></li>
+                    <li><strong>7 kişi:</strong> <span className='text-red-600'>1 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-blue-600'>1 Tarafsız</span>, <span className='text-green-600'>4 Köylü</span></li>
+                    <li><strong>8 kişi:</strong> <span className='text-red-600'>2 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-blue-600'>1 Tarafsız</span>, <span className='text-green-600'>4 Köylü</span></li>
+                    <li><strong>9 kişi:</strong> <span className='text-red-600'>2 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-blue-600'>1 Tarafsız</span>, <span className='text-green-600'>5 Köylü</span></li>
+                    <li><strong>10 kişi:</strong> <span className='text-red-600'>2 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-blue-600'>1 Tarafsız</span>, <span className='text-green-600'>6 Köylü</span></li>
+                    <li><strong>11 kişi:</strong> <span className='text-red-600'>3 Vampir</span>, <span className='text-green-600'>1 Doktor</span>, <span className='text-blue-600'>1 Tarafsız</span>, <span className='text-green-600'>6 Köylü</span></li>
                 </ul>
             </div>
             {characters.filter(character => character.type !== 'Skip').map(character => (
                 <div key={character.id} className='flex flex-col md:flex-row bg-gray-700 rounded-lg shadow-lg p-4 items-center justify-between w-full max-w-4xl'>
-                    <div className='flex flex-col items-center md:flex-row md:items-start gap-4'>
+                    <div className='flex flex-col relative items-center md:flex-row md:items-start gap-4'>
+                        {character.name === 'İzci' &&
+                            <h1 className='absolute top-0 right-0 text-gray-900 text-2xl'>(WIP)</h1>
+                        }
                         <Image height={80} width={80} className='h-20 w-20 rounded-full' src={character.image} alt={character.name} />
                         <div>
                             <h2 className='text-white text-lg font-bold text-center'>{character.name} <span className={`text-${character.sidecolor}-500`}>({character.side})</span> </h2>

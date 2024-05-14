@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-800 text-white'>
       <div className='mb-16'>
-        <div className='grid grid-cols-3 border-2 bg-gray-700 grid-wrap border-black rounded-full overflow-hidden'>
+        <div className='grid grid-cols-3 border-[4px] bg-gray-700 grid-wrap border-black rounded-full overflow-hidden'>
           <Image priority width={96} height={96} src="/boy-scout.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/villager.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/doctor.png" alt="Oyun Logo" className="w-24 h-24" />
