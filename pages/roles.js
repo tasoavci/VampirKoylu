@@ -10,15 +10,15 @@ function Roles() {
             <button onClick={() => router.push('/')} className='fixed top-5 left-5 bg-indigo-500 px-5 py-1 rounded-lg'>Geri Dön</button>
             <h1 className='text-white text-3xl font-bold mb-6'>Roller</h1>
             <div className='bg-white text-gray-800 rounded-lg p-4 shadow-xl'>
-                <h2 className='text-xl font-bold pl-[15px] mb-1'>Rol Dağılımı:</h2>
+                <h2 className='text-xl font-bold pl-[15px] mb-1'>Önerilen Rol Dağılımı:</h2>
                 <ul className='list-disc pl-8'>
                     <li>5 kişi: 1 Vampir, 1 Doktor, 3 Köylü</li>
                     <li>6 kişi: 1 Vampir, 1 Doktor, 4 Köylü</li>
-                    <li>7 kişi: 1 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 4 Köylü</li>
-                    <li>8 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 4 Köylü</li>
-                    <li>9 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 5 Köylü</li>
-                    <li>10 kişi: 2 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 6 Köylü</li>
-                    <li>11 kişi: 3 Vampir, 1 Doktor, 1 Soytarı (Opsiyonel), 6 Köylü</li>
+                    <li>7 kişi: 1 Vampir, 1 Doktor, 1 Tarafsız, 4 Köylü</li>
+                    <li>8 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 4 Köylü</li>
+                    <li>9 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 5 Köylü</li>
+                    <li>10 kişi: 2 Vampir, 1 Doktor, 1 Tarafsız, 6 Köylü</li>
+                    <li>11 kişi: 3 Vampir, 1 Doktor, 1 Tarafsız, 6 Köylü</li>
                 </ul>
             </div>
             {characters.filter(character => character.type !== 'Skip').map(character => (

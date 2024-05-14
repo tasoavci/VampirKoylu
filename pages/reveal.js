@@ -23,7 +23,6 @@ function RoleReveal() {
             }
         }
     }, [players, currentIndex]);
-
     const handleNext = () => {
         setShow(false)
         if (currentIndex < JSON.parse(players).length - 1) {

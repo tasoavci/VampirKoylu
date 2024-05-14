@@ -19,25 +19,41 @@ function Day() {
     const [nightMessage, setNightMessage] = useState('')
     const [targetToKill, setTargetToKill] = useState([]);
     const [targetToSave, setTargetToSave] = useState(null);
+    const [targetToVest, setTargetToVest] = useState(null);
     const [vampireVotes, setVampireVotes] = useState({});
+
     const playerRoles = players.filter(player => player.role !== 'Skip').map(player => {
         let color;
+        let roleName;
+
         switch (player.role) {
             case 'Vampire':
                 color = 'red';
+                roleName = 'Vampir';
                 break;
             case 'Doctor':
+                color = 'green';
+                roleName = 'Doktor';
+                break;
             case 'Villager':
                 color = 'green';
+                roleName = 'Köylü';
                 break;
             case 'Jester':
                 color = 'blue';
+                roleName = 'Soytarı';
+                break;
+            case 'Survivor':
+                color = 'blue';
+                roleName = 'Survivor';
                 break;
             default:
                 color = 'black';
+                roleName = player.role;
         }
-        return `<li>${player.name}: <span style="color: ${color};">${player.role}</span></li>`;
+        return `<li>${player.name}: <span style="color: ${color};">${roleName}</span></li>`;
     }).join('');
+
 
 
     useEffect(() => {
@@ -70,24 +86,39 @@ function Day() {
     const checkGameOver = () => {
         const livingPlayers = players.filter(player => player.isAlive && player.role !== 'Skip');
         const vampires = livingPlayers.filter(player => player.role === "Vampire");
-        const villagers = livingPlayers.filter(player => player.role !== "Vampire");
+        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor");
+        const survivors = livingPlayers.filter(player => player.role === "Survivor");
+        const jesters = livingPlayers.filter(player => player.role === 'Jester');
 
-        if (vampires.length >= villagers.length) {
-            return "Tüm köylüler öldü ve vampirler kazandı!";
+        let result = null
+        if (survivors.length > 0) {
+            if (vampires.length === 0 && survivors.length > 0 && villagers.length > 0) {
+                result = "Tüm vampirler öldü. Köylüler ve Survivor kazandı!"
+            }
+            if (villagers.length === 0 && vampires.length > 0 && survivors.length > 0 && jesters.length === 0) {
+                result = "Tüm köylüler öldü. Vampirler ve Survivorlar kazandı!"
+            }
+            if (villagers.length === 0 && vampires.length === 0 && survivors.length > 0) {
+                result = "Survivor Kazandı!"
+            }
         }
-
-        if (vampires.length === 0) {
-            return "Tüm vampirler öldü ve köylüler kazandı!";
+        if (survivors.length === 0) {
+            if (vampires.length === 0 && villagers.length > 0) {
+                result = "Tüm vampirler öldü ve köylüler kazandı!";
+            }
+            if (vampires.length >= villagers.length) {
+                result = "Tüm köylüler öldü ve vampirler kazandı!"
+            }
         }
-
-        return null;
+        return result;
     };
 
     useEffect(() => {
         if (nightMessage) {
             Swal.fire({
                 title: 'Gece Olayları',
-                text: nightMessage,
+                // text: nightMessage,
+                html: nightMessage,
                 icon: 'info',
                 confirmButtonText: 'Tamam',
             }).then(() => {
@@ -138,6 +169,7 @@ function Day() {
             if (player) {
                 player.isAlive = false;
                 if (player.role === "Jester") {
+                    player.win = true;
                     Swal.fire({
                         title: 'Gündüz Olayları',
                         html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
@@ -187,6 +219,11 @@ function Day() {
             text: "Oylama sonucu kimse ölmedi.",
             icon: 'info',
             confirmButtonText: 'Tamam',
+            customClass: {
+                popup: 'bg-gray-100 shadow-lg border',
+                title: 'text-xl font-semibold',
+                content: 'text-gray-800'
+            },
         })
         handleEndDay()
     }
@@ -206,26 +243,38 @@ function Day() {
             const uniqueTargets = [...new Set(targetToKill)];
             if (uniqueTargets.length === 1) {
 
-
                 const targetIndex = uniqueTargets[0];
-                if (targetIndex === targetToSave) {
-                    setNightMessage(`Bu gece kimse ölmedi.`);
+                if ((targetIndex === targetToSave) || (targetIndex === targetToVest)) {
+                    // setNightMessage(`Bu gece kimse ölmedi.`);
+                    setNightMessage(`
+                    <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
+                    <ul>
+                    <li>Survivor yelek giymiş olabilir.</li>
+                        <li>Doktor vampirlerin hedefini korumuş olabilir.</li>
+                        <li>Vampirler taktiksel olarak kimseyi öldürmemiş olabilir.</li>
+                    </ul>
+`);
                     setTargetToSave(null);
                     setTargetToKill([]);
+                    setTargetToVest(null);
                 } else if (targetIndex === players.length - 1) {
-                    setNightMessage('Bu gece kimse ölmedi.');
+                    // setNightMessage('Bu gece kimse ölmedi.');
+                    setNightMessage(`
+                    <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
+                    <ul>
+                    <li>Survivor yelek giymiş olabilir.</li>
+                        <li>Doktor vampirlerin hedefini korumuş olabilir.</li>
+                        <li>Vampirler taktiksel olarak kimseyi öldürmemiş olabilir.</li>
+                    </ul>
+`);
                     setTargetToKill([]);
                     setTargetToSave(null);
+                    setTargetToVest(null);
                 }
                 else {
                     players[targetIndex].isAlive = false;
                     const gameResult = checkGameOver();
                     if (gameResult) {
-                        // Swal.fire({
-                        //     title: 'Oyun Sonu',
-                        //     text: gameResult,
-                        //     icon: 'info'
-                        // })
                         Swal.fire({
                             title: 'Oyun Sonu',
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
@@ -241,27 +290,41 @@ function Day() {
                         setNightMessage(`Vampir(ler) ${players[targetIndex].name} isimli oyuncuyu öldürdü.`);
                         setTargetToSave(null);
                         setTargetToKill([]);
+                        setTargetToVest(null);
                     }
                 }
             } else {
                 const randomTargetIndex = uniqueTargets[Math.floor(Math.random() * uniqueTargets.length)];
-                if (randomTargetIndex === targetToSave) {
-                    setNightMessage('Bu gece kimse ölmedi.');
+                if ((randomTargetIndex === targetToSave) || (randomTargetIndex === targetToVest)) {
+                    // setNightMessage('Bu gece kimse ölmedi.');
+                    setNightMessage(`
+                    <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
+                    <ul>
+                    <li>Survivor yelek giymiş olabilir.</li>
+                        <li>Doktor vampirlerin hedefini korumuş olabilir.</li>
+                        <li>Vampirler taktiksel olarak kimseyi öldürmemiş olabilir.</li>
+                    </ul>
+`);
                     setTargetToSave(null);
                     setTargetToKill([]);
+                    setTargetToVest(null);
                 } else if (randomTargetIndex === players.length - 1) {
-                    setNightMessage('Bu gece kimse ölmedi.');
+                    // setNightMessage('Bu gece kimse ölmedi.');
+                    setNightMessage(`
+                    <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
+                    <ul>
+                    <li>Survivor yelek giymiş olabilir.</li>
+                        <li>Doktor vampirlerin hedefini korumuş olabilir.</li>
+                        <li>Vampirler taktiksel olarak kimseyi öldürmemiş olabilir.</li>
+                    </ul>
+`);
                     setTargetToSave(null);
                     setTargetToKill([]);
+                    setTargetToVest(null);
                 } else {
                     players[randomTargetIndex].isAlive = false;
                     const gameResult = checkGameOver();
                     if (gameResult) {
-                        // Swal.fire({
-                        //     title: 'Oyun Sonu',
-                        //     text: gameResult,
-                        //     icon: 'info'
-                        // })
                         Swal.fire({
                             title: 'Oyun Sonu',
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
@@ -277,6 +340,7 @@ function Day() {
                         setNightMessage(`Vampir(ler) ${players[randomTargetIndex].name} isimli oyuncuyu öldürdü.`);
                         setTargetToSave(null);
                         setTargetToKill([]);
+                        setTargetToVest(null);
                     }
                 }
             }
@@ -287,6 +351,7 @@ function Day() {
         setCurrentPlayerIndex(0);
         setCurrentDay(currentDay + 1);
         setVampireVotes([])
+        setTargetToVest(null);
 
     };
 
@@ -314,6 +379,18 @@ function Day() {
         handleNextPlayer();
 
     };
+    const handleSurvivorProtect = (targetIndex) => {
+        const player = players[targetIndex]
+        if (player.role === 'Survivor' && currentPlayerIndex === targetIndex && player.survivorVest > 0) {
+            setPlayers(prevPlayers =>
+                prevPlayers.map((p, idx) =>
+                    idx === targetIndex ? { ...p, survivorVest: p.survivorVest - 1 } : p
+                )
+            );
+            setTargetToVest(targetIndex)
+        }
+        handleNextPlayer()
+    }
     if (!currentPlayer) {
         return <div>Yukleniyor...</div>;
     }
@@ -509,7 +586,7 @@ function Day() {
                                             <button key={index}
                                                 disabled={player.role === 'Skip'}
                                                 onClick={handleNextPlayer}
-                                                className={`${player.role === 'Skip' ? 'hidden' : ''} bg-green-500 hover:bg-green-700 w-full min-w-40 text-white font-bold py-2 px-4 rounded my-2`}>
+                                                className={`${player.role === 'Skip' ? 'hidden' : ''} bg-blue-500  w-full min-w-40 text-white font-bold py-2 px-4 rounded my-2`}>
                                                 {player.role === 'Skip' ? '' : player.name}
                                             </button>
                                         </div>
@@ -545,6 +622,56 @@ function Day() {
 
                             </>
                         )}
+                        {currentPlayer.role === 'Survivor' && currentPlayer.isAlive && seeNightAction && (
+                            <>
+                                <div className='flex items-center justify-center flex-col'>
+                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[4].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[4].image} alt={characters[4].type} />
+                                    {currentPlayer.survivorVest > 0 &&
+                                        <h2 className='text-center text-lg mx-5 mt-2'>Kendini koru:</h2>
+                                    }
+                                    <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-2 mt-4">
+                                        {currentPlayer.survivorVest > 0 &&
+                                            <>
+                                                <h1 className="text-lg font-semibold text-gray-700 text-center">Yelek sayısı: <span className="text-blue-600">{currentPlayer.survivorVest ? currentPlayer.survivorVest : 0}</span></h1>
+                                                <div className="flex gap-2 mt-4 items-center justify-center ">
+                                                    <button onClick={() => handleSurvivorProtect(currentPlayerIndex)} className="bg-blue-500 text-white font-bold py-2 px-4 rounded text-center">Kullan</button>
+                                                    <button onClick={handleNextPlayer} className="bg-gray-500 text-white font-bold py-2 px-2 rounded text-center">Kullanma</button>
+                                                </div>
+                                            </>
+                                        }
+                                        {currentPlayer.survivorVest === 0 &&
+                                            <h1 className="text-lg font-semibold text-red-700 text-center">Tüm yelekler tükendi</h1>
+                                        }
+
+
+                                    </div>
+                                    {currentPlayer.survivorVest === 0 &&
+                                        <h2 className='text-center text-lg mx-5'>Aşağıdaki tuşlara basarak sıranı geçebilirsin</h2>
+                                    }
+
+                                </div>
+                                <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
+                                    {players.map((player, index) => (
+                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
+                                            {player.role !== 'Skip' && player.isAlive &&
+                                                <Image height={96} width={96} src={`/villager.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.role !== 'Skip' && !player.isAlive &&
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            <button key={index}
+                                                disabled={player.role === 'Skip'}
+                                                onClick={handleNextPlayer}
+                                                className={`${player.role === 'Skip' ? 'hidden' : ''} bg-blue-500 w-full min-w-40  text-white font-bold py-2 px-4 rounded my-2`}>
+                                                {player.role === 'Skip' ? '' : player.name}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </>
+                        )}
                         {currentPlayer.role === 'Skip' && seeNightAction &&
                             <div className="mt-4 w-full flex justify-center">
                                 <button
@@ -558,8 +685,9 @@ function Day() {
                         }
                     </div>
                 </>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 

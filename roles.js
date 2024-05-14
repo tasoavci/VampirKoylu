@@ -45,6 +45,17 @@ export const characters = [
     },
     {
         "id": 5,
+        "type": "Survivor",
+        "image": "/survivor.png",
+        "name": "Survivor",
+        "duties": ['Hayatta kalmaya çalış'],
+        "description": "Tarafsızdır, sadece oyun sonuna kadar hayatta kalmaya çalışır.",
+        "description2": "Eğer oyun sonuna kadar hayatta kalırsa oyunu kazanır.",
+        "side": "tarafsız",
+        "sidecolor": `blue`
+    },
+    {
+        "id": 5,
         "type": "Skip",
         "image": "jester.png",
         "name": "Boş Oy",
