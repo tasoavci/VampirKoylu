@@ -45,6 +45,17 @@ export const characters = [
     },
     {
         "id": 5,
+        "type": "veteran",
+        "image": "/veteran.png",
+        "name": "Eski Albay",
+        "duties": ['Evine geleni öldür'],
+        "description": "Evindeki alarm sistemini kullanarak kendini korur.",
+        "description2": "Gece alarm sistemini aktif hale getirdiğinde evine gelen kişiyi rolünü önemsemeden öldürür.",
+        "side": "köy",
+        "sidecolor": `green`
+    },
+    {
+        "id": 6,
         "type": "Vampire",
         "image": "/vampire.png",
         "name": "Vampir",
@@ -55,7 +66,7 @@ export const characters = [
         "sidecolor": `red`
     },
     {
-        "id": 6,
+        "id": 7,
         "type": "Jester",
         "image": "/jester.png",
         "name": "Soytarı",
@@ -66,7 +77,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 7,
+        "id": 8,
         "type": "Survivor",
         "image": "/survivor.png",
         "name": "Survivor",
@@ -77,7 +88,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 8,
+        "id": 9,
         "type": "Skip",
         "image": "jester.png",
         "name": "Boş Oy",

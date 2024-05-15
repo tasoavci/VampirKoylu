@@ -572,8 +572,8 @@ function Day() {
                         {currentPlayer.role === 'Vampire' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div>
-                                    <h1 className='text-red-500 text-2xl text-center'>{characters[4].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[4].image} alt={characters[4].type} />
+                                    <h1 className='text-red-500 text-2xl text-center'>{characters[5].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[5].image} alt={characters[5].type} />
                                 </div>
                                 <h3 className="my-2">Birini öldür:</h3>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
@@ -663,8 +663,8 @@ function Day() {
                         {currentPlayer.role === 'Jester' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div className='flex items-center justify-center flex-col'>
-                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[5].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[5].image} alt={characters[5].type} />
+                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[6].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[6].image} alt={characters[6].type} />
                                     <h2 className='text-center text-lg mx-5'>Gece yapacak bir görevin olmadığı için aşağıda işlevsiz tuşlar var bas da anlaşılmasın soytarı olduğun</h2>
                                 </div>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
@@ -718,8 +718,8 @@ function Day() {
                         {currentPlayer.role === 'Survivor' && currentPlayer.isAlive && seeNightAction && (
                             <>
                                 <div className='flex items-center justify-center flex-col'>
-                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[6].name}</h1>
-                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[6].image} alt={characters[6].type} />
+                                    <h1 className='text-blue-500 text-2xl text-center'>{characters[7].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[7].image} alt={characters[7].type} />
                                     {currentPlayer.survivorVest > 0 &&
                                         <h2 className='text-center text-lg mx-5 mt-2'>Kendini koru:</h2>
                                     }
