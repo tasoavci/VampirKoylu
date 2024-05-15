@@ -56,14 +56,19 @@ function RoleReveal() {
                             <p className="text-lg mb-2">Rolün: {currentCharacter.name}</p>
                             <p className="text-sm mb-2" style={{ color: currentCharacter.sidecolor }}>{currentCharacter.description}</p>
                             {currentPlayer.role === 'Vampire' && vampireTeam.length > 1 && (
-                                <>
-                                    <h3 className="text-lg font-bold">Takım Arkadaşın:</h3>
-                                    <ul>
+                                <div className='mb-3'>
+                                    {vampireTeam.length > 2 &&
+                                        <h3 className="text-lg font-bold">Takım Arkadaşların:</h3>
+                                    }
+                                    {vampireTeam.length === 2 &&
+                                        <h3 className="text-lg font-bold">Takım Arkadaşın:</h3>
+                                    }
+                                    <ul className='flex items-center flex-col justify-center gap-1'>
                                         {vampireTeam.filter(vamp => vamp.name !== currentPlayer.name).map(vamp => (
-                                            <li className='text-red-500 mb-4 mt-1' key={vamp.name}>{vamp.name}</li>
+                                            <li className='text-red-500 list-disc' key={vamp.name}>{vamp.name}</li>
                                         ))}
                                     </ul>
-                                </>
+                                </div>
                             )}
                             {/* <ul className="text-center mx-auto mb-4">
                                 {currentCharacter.duties.map(duty => (

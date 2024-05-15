@@ -47,6 +47,10 @@ function Day() {
                 color = 'blue';
                 roleName = 'Survivor';
                 break;
+            case 'Sheriff':
+                color = 'green';
+                roleName = 'Muhtar';
+                break;
             default:
                 color = 'black';
                 roleName = player.role;
@@ -86,7 +90,7 @@ function Day() {
     const checkGameOver = () => {
         const livingPlayers = players.filter(player => player.isAlive && player.role !== 'Skip');
         const vampires = livingPlayers.filter(player => player.role === "Vampire");
-        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor");
+        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor" || player.role === "Sheriff");
         const survivors = livingPlayers.filter(player => player.role === "Survivor");
         const jesters = livingPlayers.filter(player => player.role === 'Jester');
 
@@ -112,6 +116,21 @@ function Day() {
         }
         return result;
     };
+    const winningImages = (result) => {
+        switch (result) {
+            case "Tüm vampirler öldü. Köylüler ve Survivor kazandı!":
+                return '/villager.png';
+            case "Tüm köylüler öldü. Vampirler ve Survivorlar kazandı!":
+                return '/vampire.png';
+            case "Survivor Kazandı!":
+                return '/survivor.png'
+            case "Tüm vampirler öldü ve köylüler kazandı!":
+                return '/villager.png'
+            case "Tüm köylüler öldü ve vampirler kazandı!":
+                return '/vampire.png';
+
+        }
+    }
 
     useEffect(() => {
         if (nightMessage) {
@@ -193,7 +212,7 @@ function Day() {
             Swal.fire({
                 title: 'Oyun Sonu',
                 html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
-                <img src="/villager.png" style="width:100px; height:100px;">
+                <img src=${winningImages(gameResult)} style="width:100px; height:100px;">
                 <p>${gameResult}</p>
                 <p>Gün Sayısı: ${currentDay}</p>
                 <ul>${playerRoles}</ul>
@@ -278,7 +297,7 @@ function Day() {
                         Swal.fire({
                             title: 'Oyun Sonu',
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
-                            <img src="/vampire.png" style="width:100px; height:100px;">
+                            <img src=${winningImages(gameResult)} style="width:100px; height:100px;">
                             <p>${gameResult}</p>
                             <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
@@ -328,7 +347,7 @@ function Day() {
                         Swal.fire({
                             title: 'Oyun Sonu',
                             html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
-                            <img src="/vampire.png" style="width:100px; height:100px;">
+                            <img src=${winningImages(gameResult)} style="width:100px; height:100px;">
                             <p>${gameResult}</p>
                             <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
