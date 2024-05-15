@@ -24,7 +24,7 @@ function Roles() {
             {characters.filter(character => character.type !== 'Skip').map(character => (
                 <div key={character.id} className='flex flex-col md:flex-row bg-gray-700 rounded-lg shadow-lg p-4 items-center justify-between w-full max-w-4xl'>
                     <div className='flex flex-col relative items-center md:flex-row md:items-start gap-4'>
-                        {(character.name === 'İzci' || character.name === 'Eski Albay') &&
+                        {(character.name === 'İzci') &&
                             <h1 className='absolute top-0 right-0 text-gray-900 text-2xl'>(WIP)</h1>
                         }
                         <Image height={80} width={80} className='h-20 w-20 rounded-full' src={character.image} alt={character.name} />

@@ -8,7 +8,7 @@ function StartGameForm({ onStartGame }) {
     const [numDoctor, setNumDoctor] = useState(1)
     const [numSheriff, setNumSheriff] = useState(0)
     const [numNeutral, setNumNeutral] = useState(playerCount >= 7 ? 1 : 0)
-    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor))
+    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff))
     const router = useRouter()
 
     useEffect(() => {
@@ -17,7 +17,6 @@ function StartGameForm({ onStartGame }) {
     }, [numDoctor, numNeutral, numVampires, numSheriff, playerCount])
     const handlePlayerCountChange = event => {
         const count = parseInt(event.target.value, 10);
-        console.log(count)
         setPlayerCount(count);
         setPlayerNames(Array(count).fill(''));
         setNumVampires(count >= 11 ? 3 : (count >= 8 ? 2 : 1));
@@ -27,9 +26,6 @@ function StartGameForm({ onStartGame }) {
     const updateVillagerCount = () => {
         setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff));
     };
-    const neutralUpdate = () => {
-        setNumNeutral(playerCount >= 7 ? 1 : 0)
-    }
 
     const handlePlayerNameChange = (index, event) => {
         const newNames = [...playerNames];
@@ -50,6 +46,7 @@ function StartGameForm({ onStartGame }) {
     const handleSheriffChange = event => {
         setNumSheriff(parseInt(event.target.value, 10));
     };
+
 
     const handleSubmit = event => {
         event.preventDefault();

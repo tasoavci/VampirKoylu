@@ -107,7 +107,7 @@ export class Game {
                 isSelfHealed: false,
                 survivorVest: 2,
                 sheriffLookout: 2,
-                roleKnownBySheriff: false
+                roleKnownBySheriff: false,
             };
         });
     }
