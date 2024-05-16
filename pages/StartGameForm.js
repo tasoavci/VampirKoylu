@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
+
 
 function StartGameForm({ onStartGame }) {
     const [playerCount, setPlayerCount] = useState(5);
@@ -7,14 +9,16 @@ function StartGameForm({ onStartGame }) {
     const [numVampires, setNumVampires] = useState(playerCount >= 11 ? 3 : (playerCount >= 8 ? 2 : 1))
     const [numDoctor, setNumDoctor] = useState(1)
     const [numSheriff, setNumSheriff] = useState(0)
+    const [numScout, setNumScout] = useState(0)
     const [numNeutral, setNumNeutral] = useState(playerCount >= 7 ? 1 : 0)
-    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff))
+    const [neutralArray, setNeutralArray] = useState([0, 1, 2])
+    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff + numScout))
     const router = useRouter()
 
     useEffect(() => {
-        // neutralUpdate()
         updateVillagerCount()
-    }, [numDoctor, numNeutral, numVampires, numSheriff, playerCount])
+        updateNeutralArray()
+    }, [numDoctor, numNeutral, numVampires, numSheriff, numScout, playerCount])
     const handlePlayerCountChange = event => {
         const count = parseInt(event.target.value, 10);
         setPlayerCount(count);
@@ -24,8 +28,11 @@ function StartGameForm({ onStartGame }) {
         updateVillagerCount()
     };
     const updateVillagerCount = () => {
-        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff));
+        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff + numScout));
     };
+    const updateNeutralArray = () => {
+        setNeutralArray(playerCount === 7 ? [0, 1] : [0, 1, 2])
+    }
 
     const handlePlayerNameChange = (index, event) => {
         const newNames = [...playerNames];
@@ -46,11 +53,14 @@ function StartGameForm({ onStartGame }) {
     const handleSheriffChange = event => {
         setNumSheriff(parseInt(event.target.value, 10));
     };
+    const handleScoutChange = event => {
+        setNumScout(parseInt(event.target.value, 10));
+    };
 
 
     const handleSubmit = event => {
         event.preventDefault();
-        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral, numSheriff);
+        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral, numSheriff, numScout);
 
     };
 
@@ -88,71 +98,104 @@ function StartGameForm({ onStartGame }) {
                     />
                 </div>
             ))}
-            <div className="mb-4">
+            <div className="mb-4 flex flex-col">
                 <label htmlFor="numVampires" className="block text-red-700 text-sm font-bold mb-2">
                     Vampir Sayısı:
                 </label>
-                <select
-                    id="numVampires"
-                    value={numVampires}
-                    onChange={handleVampiresChange}
-                    className="shadow appearance-none border  rounded w-full py-2 px-3 text-red-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                    {[1, 2, 3].map(vampireCount => (
-                        <option key={vampireCount} value={vampireCount}>{vampireCount}</option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="numDoctor" className="block text-green-700 text-sm font-bold mb-2">
-                    Doktor Sayısı:
-                </label>
-                <select
-                    id="numDoctor"
-                    value={numDoctor}
-                    onChange={handleDoctorChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                    {[0, 1].map(doctorCount => (
-                        <option key={doctorCount} value={doctorCount}>{doctorCount}</option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-4">
-                <label htmlFor="numSheriff" className="block text-green-700 text-sm font-bold mb-2">
-                    Muhtar Sayısı:
-                </label>
-                <select
-                    id="numSheriff"
-                    value={numSheriff}
-                    onChange={handleSheriffChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-                    {[0, 1].map(sheriffCount => (
-                        <option key={sheriffCount} value={sheriffCount}>{sheriffCount}</option>
-                    ))}
-                </select>
-            </div>
-            {playerCount >= 7 &&
-                <div className="mb-4">
-                    <label htmlFor="numNeutral" className="block text-blue-700 text-sm font-bold mb-2">
-                        Tarafsız Rol Sayısı:
-                    </label>
+                <div className='flex items-center justify-center gap-2'>
+                    <Image width={50} height={50} src={'/vampire.png'} alt='vampir' className='object-contain rounded-full' />
                     <select
-                        id="numNeutral"
-                        value={numNeutral}
-                        onChange={handleNeutralChange}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-blue-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="numVampires"
+                        value={numVampires}
+                        onChange={handleVampiresChange}
+                        className="shadow appearance-none border  rounded w-full py-2 px-3 text-red-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                        {[0, 1, 2].map(neutralCount => (
-                            <option key={neutralCount} value={neutralCount}>{neutralCount}</option>
+                        {[1, 2, 3].map(vampireCount => (
+                            <option key={vampireCount} value={vampireCount}>{vampireCount}</option>
                         ))}
                     </select>
                 </div>
+            </div>
+
+            <div className="mb-4 flex flex-col">
+                <label htmlFor="numDoctor" className="block text-green-700 text-sm font-bold mb-2">
+                    Doktor Sayısı:
+                </label>
+                <div className='flex items-center justify-center gap-2'>
+                    <Image width={50} height={50} src={'/doctor.png'} alt='doktor' className='object-contain rounded-full' />
+                    <select
+                        id="numDoctor"
+                        value={numDoctor}
+                        onChange={handleDoctorChange}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                        {[0, 1].map(doctorCount => (
+                            <option key={doctorCount} value={doctorCount}>{doctorCount}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="mb-4 flex flex-col">
+                <label htmlFor="numSheriff" className="block text-green-700 text-sm font-bold mb-2">
+                    Muhtar Sayısı:
+                </label>
+                <div className='flex items-center justify-center gap-2'>
+                    <Image width={50} height={50} src={'/sheriff.png'} alt='muhtar' className='object-contain rounded-full' />
+                    <select
+                        id="numSheriff"
+                        value={numSheriff}
+                        onChange={handleSheriffChange}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                        {[0, 1].map(sheriffCount => (
+                            <option key={sheriffCount} value={sheriffCount}>{sheriffCount}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            {playerCount >= 6 &&
+                <div className="mb-4 flex flex-col">
+                    <label htmlFor="numScout" className="block text-green-700 text-sm font-bold mb-2">
+                        İzci Sayısı:
+                    </label>
+                    <div className='flex items-center justify-center gap-2'>
+                        <Image width={50} height={50} src={'/boy-scout.png'} alt='izci' className='object-contain rounded-full' />
+                        <select
+                            id="numScout"
+                            value={numScout}
+                            onChange={handleScoutChange}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
+                        >
+                            {[0, 1].map(scoutCount => (
+                                <option key={scoutCount} value={scoutCount}>{scoutCount}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>}
+            {playerCount >= 7 &&
+                <div className="mb-4 flex flex-col">
+                    <label htmlFor="numNeutral" className="block text-blue-700 text-sm font-bold mb-2">
+                        Tarafsız Rol Sayısı:
+                    </label>
+                    <div className='flex items-center justify-center gap-2'>
+                        <Image width={50} height={50} src={'/survivor.png'} alt='tarafsiz' className='object-contain rounded-full' />
+                        <Image width={50} height={50} src={'/jester.png'} alt='tarafsiz' className='object-contain rounded-full' />
+                        <select
+                            id="numNeutral"
+                            value={numNeutral}
+                            onChange={handleNeutralChange}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-blue-700 leading-tight focus:outline-none focus:shadow-outline"
+                        >
+                            {neutralArray.map(neutralCount => (
+                                <option key={neutralCount} value={neutralCount}>{neutralCount}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
             }
-            <div className='flex items-center justify-center my-2'>
-                <h1 className='text-gray-800 text-center text-lg'>Düz köylü sayısı: <span className='text-green-700'>{numVillager}</span></h1>
+            <div className='flex items-center justify-left gap-3 my-2'>
+                <Image width={50} height={50} src={'/villager.png'} alt='koylu' className='object-contain rounded-full' />
+                <h1 className='text-gray-800 text-center text-lg'>Köylü sayısı: <span className='text-green-700'>{numVillager}</span></h1>
             </div>
 
             <button type="submit" className="bg-blue-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">

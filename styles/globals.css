@@ -4,5 +4,27 @@
 
 :root{
 color: azure;
-
 }
+
+.bodyBackground {
+    background-image: url('/daytime.jpeg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    min-height: 100vh; 
+  }
+.bodyBackgroundNoSun {
+    background-image: url('/daytime-sunless.jpeg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    min-height: 100vh; 
+  }
+.bodyBackgroundNight {
+    background-image: url('/midnight.jpeg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    min-height: 100vh; 
+  }
+  

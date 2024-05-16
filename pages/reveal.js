@@ -40,7 +40,7 @@ function RoleReveal() {
 
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 text-white">
+        <div className="flex flex-col bodyBackground items-center justify-center min-h-screen bg-gray-800 text-white">
             {currentCharacter && currentPlayer.role !== 'Skip' && (
                 <>
                     <div className="w-full max-w-md p-5 bg-gray-900 rounded-lg shadow-xl text-center">

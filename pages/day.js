@@ -21,6 +21,7 @@ function Day() {
     const [targetToSave, setTargetToSave] = useState(null);
     const [targetToVest, setTargetToVest] = useState(null);
     const [vampireVotes, setVampireVotes] = useState({});
+    const [scoutMessage, setScoutMessage] = useState('')
 
     const playerRoles = players.filter(player => player.role !== 'Skip').map(player => {
         let color;
@@ -50,6 +51,10 @@ function Day() {
             case 'Sheriff':
                 color = 'green';
                 roleName = 'Muhtar';
+                break;
+            case 'Scout':
+                color = 'green';
+                roleName = 'İzci';
                 break;
             default:
                 color = 'black';
@@ -90,7 +95,7 @@ function Day() {
     const checkGameOver = () => {
         const livingPlayers = players.filter(player => player.isAlive && player.role !== 'Skip');
         const vampires = livingPlayers.filter(player => player.role === "Vampire");
-        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor" || player.role === "Sheriff");
+        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor" || player.role === "Sheriff" || player.role === "Scout");
         const survivors = livingPlayers.filter(player => player.role === "Survivor");
         const jesters = livingPlayers.filter(player => player.role === 'Jester');
 
@@ -131,21 +136,59 @@ function Day() {
 
         }
     }
-
     useEffect(() => {
-        if (nightMessage) {
+        if (currentDay > 0 && isNight === false) {
+            const scout = players.find(player => player.role === "Scout");
+            if (scout && scout.nightActionTarget !== null) {
+                const targetPlayerIndex = scout.nightActionTarget;
+                const targetPlayer = players[targetPlayerIndex];
+                const actionTargetPlayer = players[targetPlayer.nightActionTarget];
+
+                if (targetPlayer && targetPlayer.nightActionTarget !== null) {
+                    if (actionTargetPlayer) {
+                        setScoutMessage(`Bu gece izcinin izlediği oyuncu ${actionTargetPlayer.name} oyuncusuna gitti.`);
+                        scout.nightActionTarget = null;
+                    }
+                } else {
+                    setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
+                    scout.nightActionTarget = null;
+                }
+            }
+        }
+    }, [isNight, players, currentDay, nightMessage]);
+    useEffect(() => {
+        if (nightMessage && scoutMessage === '') {
             Swal.fire({
                 title: 'Gece Olayları',
-                // text: nightMessage,
-                html: nightMessage,
+                html: `<p>${nightMessage}</p>`,
                 icon: 'info',
                 confirmButtonText: 'Tamam',
             }).then(() => {
                 setNightMessage('');
             });
         }
-    }, [nightMessage]);
+        if (nightMessage && scoutMessage !== '') {
+            Swal.fire({
+                title: 'Gece Olayları',
+                html: `<p style="margin-bottom: 20px;"><strong>${scoutMessage}</strong></p><p>${nightMessage}</p>`,
+                icon: 'info',
+                confirmButtonText: 'Tamam',
+            }).then(() => {
+                setNightMessage('');
+                setScoutMessage('')
+                clearNightActions()
+            });
+        }
+    }, [nightMessage, scoutMessage]);
 
+    const clearNightActions = () => {
+        setPlayers(prevPlayers => prevPlayers.map(player => {
+            if (player.role !== 'Skip') {
+                return { ...player, nightActionTarget: null };
+            }
+            return player;
+        }));
+    };
     const handleVote = (name) => {
         setVotes(prevVotes => {
             const updatedVotes = { ...prevVotes, [name]: (prevVotes[name] || 0) + 1 };
@@ -377,6 +420,13 @@ function Day() {
 
     const handleVampireKill = (targetIndex) => {
         setTargetToKill(prev => [...prev, targetIndex]);
+        setPlayers(prevPlayers => prevPlayers.map((player, index) => {
+            if (index === currentPlayerIndex) {
+                const isLastPlayer = targetIndex === prevPlayers.length - 1;
+                return { ...player, nightActionTarget: isLastPlayer ? null : targetIndex };
+            }
+            return player;
+        }));
         setVampireVotes(prevVotes => ({
             ...prevVotes,
             [targetIndex]: (prevVotes[targetIndex] || 0) + 1
@@ -394,6 +444,9 @@ function Day() {
                 )
             );
         }
+        setPlayers(prevPlayers => prevPlayers.map((player, index) =>
+            index === currentPlayerIndex ? { ...player, nightActionTarget: targetIndex } : player
+        ));
         setTargetToSave(targetIndex)
         handleNextPlayer();
 
@@ -417,7 +470,11 @@ function Day() {
                 prevPlayers.map((p, idx) =>
                     idx === currentPlayerIndex ? { ...p, sheriffLookout: p.sheriffLookout - 1 } : p
                 )
+
             );
+            setPlayers(prevPlayers => prevPlayers.map((player, index) =>
+                index === currentPlayerIndex ? { ...player, nightActionTarget: targetIndex } : player
+            ));
             Swal.fire({
                 title: `<strong>Oyuncunun Rolü:</strong>`,
                 html: `<div style="color: ${getColorByRole(player.role)}; font-size: 20px;">${categorizeRole(player.role)}</div>`,
@@ -433,12 +490,27 @@ function Day() {
         player.roleKnownBySheriff = true
         handleNextPlayer()
     }
+    const handleScoutLookout = (targetIndex) => {
+        if (players[currentPlayerIndex].role === 'Scout' && players[currentPlayerIndex].scoutLookout > 0) {
+            setPlayers(prevPlayers =>
+                prevPlayers.map((p, idx) =>
+                    idx === currentPlayerIndex ? { ...p, scoutLookout: p.scoutLookout - 1 } : p
+                )
+            );
+            setPlayers(prevPlayers => prevPlayers.map((player, index) =>
+                index === currentPlayerIndex ? { ...player, nightActionTarget: targetIndex } : player
+            ));
+        }
+        handleNextPlayer()
+    }
     function categorizeRole(role) {
         switch (role) {
             case 'Doctor':
                 return 'Doktor';
             case 'Sheriff':
                 return 'Muhtar';
+            case 'Scout':
+                return 'İzci';
             case 'Villager':
                 return 'Köylü';
             case 'Vampire':
@@ -456,6 +528,7 @@ function Day() {
             case 'Doctor':
             case 'Villager':
             case 'Sheriff':
+            case 'Scout':
                 return '#28a745';
             case 'Vampire':
                 return '#dc3545';
@@ -472,6 +545,8 @@ function Day() {
                 return '/doctor.png';
             case 'Sheriff':
                 return '/sheriff.png';
+            case 'Scout':
+                return '/boy-scout.png';
             case 'Villager':
                 return '/villager.png';
             case 'Vampire':
@@ -487,13 +562,12 @@ function Day() {
     if (!currentPlayer) {
         return <div>Yukleniyor...</div>;
     }
-    console.log(players)
     return (
-        <div className={`min-h-screen flex flex-col items-center justify-center py-10 ${isNight ? 'bg-black' : 'bg-blue-200'}`}>
+        <div className={`min-h-screen  flex flex-col items-center justify-center py-10 ${isNight ? 'bodyBackgroundNight' : 'bodyBackgroundNoSun'}`}>
             {!isNight ? (
                 <>
                     <Image height={80} width={80} className='h-20 w-20 mb-5' src='/sunny.png' alt='sun' />
-                    <h1 className="text-2xl font-bold mb-4">Gündüz Vakti - Oylama</h1>
+                    <h1 className="text-2xl font-bold mb-4">Gündüz Vakti - Tartışma</h1>
                     <h1 className="text-2xl font-bold mb-4">{currentDay}. gün</h1>
                     {players[currentVoterIndex].role !== 'Skip' &&
                         <p className="text-lg mb-4">Oy kullanma sırası: {players[currentVoterIndex] ? <span className='font-bold text-gray-600 text-xl'>{players[currentVoterIndex].name}</span> : 'Bilinmeyen'}</p>}
@@ -534,17 +608,19 @@ function Day() {
                     </div>
 
 
-                    {players[currentVoterIndex].role !== 'Skip' &&
-                        <button onClick={SkipVoting} className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                            Oylamayı Atla ve Geceye Geç
+                    {(players[currentVoterIndex].role !== 'Skip' && currentDay === 1) &&
+                        <button onClick={SkipVoting} className="mt-4 bg-black/40 text-white font-bold py-2 gap-2 px-4 rounded-lg flex flex-col items-center justify-center">
+                            <Image height={80} width={80} src='/moon.png' alt='moon' className='h-20 w-20' />
+                            İlk Gün Oylamasını Atla ve Geceye Geç
                         </button>
                     }
                     {players[currentVoterIndex].role === 'Skip' &&
-                        <div className="mt-4 w-full flex justify-center">
+                        <div className="mt-4 w-full flex justify-center items-center">
                             <button
                                 onClick={() => handleVote('bombos')}
-                                className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg "
+                                className="bg-black/40 text-white font-bold py-3 px-6 gap-1 rounded-lg shadow-lg flex items-center flex-col justify-center"
                             >
+                                <Image height={80} width={80} src='/moon.png' alt='moon' className='h-20 w-20' />
                                 Geceye Geç
                             </button>
                         </div>
@@ -554,7 +630,7 @@ function Day() {
                 <>
                     <div className="flex flex-col items-center justify-center min-h-screen text-white m-10 w-full">
                         <Image height={80} width={80} className='h-20 w-20 mb-5' src='/moon.png' alt='moon' />
-                        <div className='mb-10 text-center text-gray-500'>
+                        <div className='mb-10 text-center text-gray-400'>
                             <h1 className="text-2xl font-bold mb-4">Gece Vakti - Görevler</h1>
                             <h1 className="text-2xl font-bold mb-4">{currentDay}. gece</h1>
                         </div>
@@ -813,11 +889,56 @@ function Day() {
 
                             </>
                         )}
+                        {currentPlayer.role === 'Scout' && currentPlayer.isAlive && seeNightAction && (
+                            <>
+                                <div className='flex items-center justify-center flex-col'>
+                                    <h1 className='text-green-500 text-2xl text-center'>{characters[2].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[2].image} alt={characters[2].type} />
+                                    {currentPlayer.scoutLookout > 0 &&
+                                        <>
+                                            <h1 className="text-lg font-semibold text-gray-700 text-center">Oyuncu izleme hakkın: <span className="text-green-600">{currentPlayer.scoutLookout ? currentPlayer.scoutLookout : 0}</span></h1>
+                                            <button onClick={handleNextPlayer} className='bg-green-500 px-4 py-1 text-xl rounded-lg my-2'>Sıranı geç</button>
+                                            <div className="flex gap-2 mt-4 text-xl items-center justify-center ">
+                                                Birisini izle:
+                                            </div>
+                                        </>
+                                    }
+                                    {currentPlayer.scoutLookout === 0 &&
+                                        <div className='flex flex-col items-center justify-center gap-2'>
+                                            <h1 className="text-lg font-semibold text-red-700 text-center">Oyuncu izleme hakkın bitti.</h1>
+                                            <button onClick={handleNextPlayer} className='bg-green-500 px-4 py-1 text-xl rounded-lg'>Sıranı geç</button>
+                                        </div>
+                                    }
+                                </div>
+                                <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
+                                    {players.map((player, index) => (
+                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
+                                            {player.role === 'Scout' && player.isAlive &&
+                                                <Image height={96} width={96} src={`/boy-scout.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.role !== 'Skip' && player.isAlive && player.role !== 'Scout' &&
+                                                < Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.role !== 'Skip' && !player.isAlive &&
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            <button key={index}
+                                                disabled={player.role === 'Skip' || currentPlayerIndex === index || players[currentPlayerIndex].scoutLookout === 0}
+                                                onClick={() => handleScoutLookout(index)}
+                                                className={`${player.role === 'Skip' ? 'hidden' : ''} ${`${currentPlayerIndex === index || players[currentPlayerIndex].scoutLookout === 0 ? 'bg-green-500/10' : ''}`} bg-green-500 w-full min-w-40 text-white font-bold py-2 px-4 rounded my-2`}>
+                                                {player.role === 'Skip' ? '' : player.name}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </>
+                        )}
                         {currentPlayer.role === 'Skip' && seeNightAction &&
                             <div className="mt-4 w-full flex justify-center">
                                 <button
                                     onClick={handleNextPlayer}
-                                    className="bg-blue-500 hover:bg-blue-700 gap-1 flex items-center justify-center flex-col text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-300 focus:outline-none"
+                                    className="bg-black/40 gap-1 flex items-center justify-center flex-col text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-300 focus:outline-none"
                                 >
                                     <Image height={80} width={80} src='/sunny.png' alt='sun' className='h-20 w-20 ' />
                                     Sabaha Geç

@@ -28,7 +28,7 @@ export const characters = [
         "name": "İzci",
         "duties": ['Her gece birisini izle'],
         "description": "Her gece seçtiği birisini izler.",
-        "description2": "Seçtiği kişinin o gece kime gittiğini öğrenir ve köy halkına söyler.",
+        "description2": "Seçtiği kişinin o gece kime gittiğini öğrenir ve köy halkına söyler. Özelliğini yalnızca 3 kere kullanabilir.",
         "side": "köy",
         "sidecolor": `green`
     },
@@ -50,7 +50,7 @@ export const characters = [
         "image": "/vampire.png",
         "name": "Vampir",
         "duties": ["Her gece bir köylüyü öldür"],
-        "description": "Geceleyin köylüleri beslenmek için öldürür.",
+        "description": "Gece köylüleri beslenmek için öldürür.",
         "description2": "Eğer oyunda birden fazla vampir varsa gece vampirler arasında bir oylama mekanizması çalışır. Vampiler en çok oy alan oyuncuyu öldürmeye çalışır, eğer oylar eşit ise oy verdikleri kişiler arasından rastgele birini öldürürler.",
         "side": "vampir",
         "sidecolor": `red`
