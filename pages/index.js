@@ -15,7 +15,7 @@ export default function Home() {
           transition={{ type: 'spring', stiffness: 60 }}
           className='grid grid-cols-3 border-[4px] bg-gray-700 grid-wrap border-black rounded-[100px] overflow-hidden'>
           <Image priority width={96} height={96} src="/boy-scout.png" alt="Oyun Logo" className="w-24 h-24" />
-          <Image priority width={96} height={96} src="/villager.png" alt="Oyun Logo" className="w-24 h-24" />
+          <Image priority width={96} height={96} src="/vampire-hunter.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/doctor.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/jester.png" alt="Oyun Logo" className="w-24 h-24" />
           <Image priority width={96} height={96} src="/vampire.png" alt="Oyun Logo" className="w-24 h-24" />
@@ -53,8 +53,8 @@ export default function Home() {
           Oyna
         </motion.button>
         <motion.button
-          initial={{ x: '-70vh' }} // Başlangıç konumu (viewport yüksekliğinin üzerinde)
-          animate={{ x: 0 }}        // Bitiş konumu (normal konumu)
+          initial={{ x: '-70vh' }}
+          animate={{ x: 0 }}
           transition={{ type: 'spring', stiffness: 60 }}
           onClick={() => router.push('/roles')}
           className="bg-green-500 text-white font-bold py-3 px-6 w-1/2 rounded-lg shadow-lg  focus:outline-none"

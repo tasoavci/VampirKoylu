@@ -43,9 +43,19 @@ export const characters = [
         "side": "köy",
         "sidecolor": `green`
     },
-
     {
         "id": 5,
+        "type": "Hunter",
+        "image": "/vampire-hunter.png",
+        "name": "Vampir Avcısı",
+        "duties": ['Evine gelen vampirleri öldür'],
+        "description": "Eğer gece tuzaklarını aktif hale getirirse evine gelen tüm vampirleri öldürür.",
+        "description2": "Özelliğini yalnızca 1 kere kullanabilir.",
+        "side": "köy",
+        "sidecolor": `green`
+    },
+    {
+        "id": 6,
         "type": "Vampire",
         "image": "/vampire.png",
         "name": "Vampir",
@@ -56,7 +66,7 @@ export const characters = [
         "sidecolor": `red`
     },
     {
-        "id": 6,
+        "id": 7,
         "type": "Jester",
         "image": "/jester.png",
         "name": "Soytarı",
@@ -67,7 +77,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 7,
+        "id": 8,
         "type": "Survivor",
         "image": "/survivor.png",
         "name": "Survivor",
@@ -78,7 +88,7 @@ export const characters = [
         "sidecolor": `blue`
     },
     {
-        "id": 8,
+        "id": 9,
         "type": "Skip",
         "image": "jester.png",
         "name": "Boş Oy",
