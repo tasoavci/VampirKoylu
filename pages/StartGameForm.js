@@ -18,7 +18,6 @@ function StartGameForm({ onStartGame }) {
     const router = useRouter()
 
     useEffect(() => {
-        updateRolesCount()
         updateVillagerCount()
         updateNeutralArray()
         updateVampireArray()
@@ -33,10 +32,6 @@ function StartGameForm({ onStartGame }) {
     };
     const updateVillagerCount = () => {
         setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff + numScout + numHunter));
-    };
-    const updateRolesCount = () => {
-        setNumScout(playerCount <= 6 ? 0 : 1)
-        setNumHunter(playerCount <= 6 ? 0 : 1)
     };
     const updateNeutralArray = () => {
         setNeutralArray(playerCount <= 8 ? [0, 1] : [0, 1, 2])
