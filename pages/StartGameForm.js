@@ -13,12 +13,15 @@ function StartGameForm({ onStartGame }) {
     const [numHunter, setNumHunter] = useState(0)
     const [numNeutral, setNumNeutral] = useState(playerCount >= 7 ? 1 : 0)
     const [neutralArray, setNeutralArray] = useState([0, 1, 2])
+    const [vampireArray, setVampireArray] = useState([1, 2, 3])
     const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff + numScout + numHunter))
     const router = useRouter()
 
     useEffect(() => {
+        updateRolesCount()
         updateVillagerCount()
         updateNeutralArray()
+        updateVampireArray()
     }, [numDoctor, numNeutral, numVampires, numSheriff, numScout, numHunter, playerCount])
     const handlePlayerCountChange = event => {
         const count = parseInt(event.target.value, 10);
@@ -31,8 +34,15 @@ function StartGameForm({ onStartGame }) {
     const updateVillagerCount = () => {
         setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff + numScout + numHunter));
     };
+    const updateRolesCount = () => {
+        setNumScout(playerCount <= 6 ? 0 : 1)
+        setNumHunter(playerCount <= 6 ? 0 : 1)
+    };
     const updateNeutralArray = () => {
-        setNeutralArray(playerCount === 7 ? [0, 1] : [0, 1, 2])
+        setNeutralArray(playerCount <= 8 ? [0, 1] : [0, 1, 2])
+    }
+    const updateVampireArray = () => {
+        setVampireArray(playerCount === 7 ? [1, 2] : [1, 2, 3])
     }
 
     const handlePlayerNameChange = (index, event) => {
@@ -112,7 +122,7 @@ function StartGameForm({ onStartGame }) {
                         onChange={handleVampiresChange}
                         className="shadow appearance-none border  rounded w-full py-2 px-3 text-red-700 leading-tight focus:outline-none focus:shadow-outline"
                     >
-                        {[1, 2, 3].map(vampireCount => (
+                        {vampireArray.map(vampireCount => (
                             <option key={vampireCount} value={vampireCount}>{vampireCount}</option>
                         ))}
                     </select>
