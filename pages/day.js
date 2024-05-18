@@ -411,8 +411,15 @@ function Day() {
             }, {});
             const repeatedTarget = Object.keys(targetCounts).find(target => targetCounts[target] > 1);
             const uniqueTargets = repeatedTarget !== undefined ? [parseInt(repeatedTarget)] : [...new Set(targetToKill)];
+            console.log(uniqueTargets)
+
             if (uniqueTargets.length === 1) {
                 const targetIndex = uniqueTargets[0];
+                console.log('vampirin hedefi:', targetIndex)
+                console.log('hunter var mi?:', hunter !== null)
+                console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
+                console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === targetIndex)
+                console.log('hunterin hedefi:', hunter[0].nightActionTarget)
                 if (targetIndex === players.length - 1) {
                     // setNightMessage('Bu gece kimse ölmedi.');
                     setNightMessage(`
@@ -430,7 +437,7 @@ function Day() {
                 else if (hunter !== null && hunter[0].isHunterUsedTrap && hunter[0].nightActionTarget === targetIndex) {
                     const hunterTarget = hunter[0].nightActionTarget;
 
-                    if (targetIndex + 1 === hunterTarget) {
+                    if (targetIndex === hunterTarget) {
                         // Vampir hunter'ın hedefini öldürmeye çalışıyor, hunter tuzak kurmuş
                         setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
                         Swal.fire({
@@ -474,6 +481,7 @@ function Day() {
                         });
                         router.push('/')
                     } else {
+                        console.log('buraya mi giriyo lan yoksa')
                         setNightMessage(`Vampir(ler) ${players[targetIndex].name} isimli oyuncuyu öldürdü.`);
                         setTargetToSave(null);
                         setTargetToKill([]);
@@ -482,7 +490,11 @@ function Day() {
                 }
             } else {
                 const randomTargetIndex = uniqueTargets[Math.floor(Math.random() * uniqueTargets.length)];
-
+                console.log(randomTargetIndex)
+                console.log('hunter var mi?:', hunter !== null)
+                console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
+                console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === randomTargetIndex + 1)
+                console.log('hunterin hedefi:', hunter[0].nightActionTarget)
                 if (randomTargetIndex === players.length - 1) {
                     // setNightMessage('Bu gece kimse ölmedi.');
                     setNightMessage(`
@@ -497,9 +509,9 @@ function Day() {
                     setTargetToKill([]);
                     setTargetToVest(null);
                 }
-                else if (hunter !== null && hunter[0].isHunterUsedTrap && hunter[0].nightActionTarget === randomTargetIndex + 1) {
+                else if (hunter !== null && hunter[0].isHunterUsedTrap && hunter[0].nightActionTarget === randomTargetIndex) {
                     const hunterTarget = hunter[0].nightActionTarget;
-                    if (randomTargetIndex + 1 === hunterTarget) {
+                    if (randomTargetIndex === hunterTarget) {
                         setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
                         Swal.fire({
                             title: 'Oyun Sonu',
