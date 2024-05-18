@@ -1,12 +1,12 @@
 export class Game {
-    constructor(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout) {
-        this.players = this.assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout);
+    constructor(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout, numHunter) {
+        this.players = this.assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout, numHunter);
         this.isNight = false;
     }
 
-    assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout) {
+    assignRoles(playerNames, numVampires, numDoctor, numNeutral, numSheriff, numScout, numHunter) {
         const roles = [];
-        const numVillagers = (playerNames.length - 1) - (numVampires + numDoctor + numNeutral + numSheriff + numScout);
+        const numVillagers = (playerNames.length - 1) - (numVampires + numDoctor + numNeutral + numSheriff + numScout + numHunter);
 
         for (let i = 0; i < numVampires; i++) {
             roles.push('Vampire');
@@ -19,6 +19,9 @@ export class Game {
         }
         for (let i = 0; i < numScout; i++) {
             roles.push('Scout');
+        }
+        for (let i = 0; i < numHunter; i++) {
+            roles.push('Hunter');
         }
         for (let i = 0; i < numNeutral; i++) {
             const role = Math.random() < 0.5 ? 'Jester' : 'Survivor';
@@ -48,7 +51,9 @@ export class Game {
                 sheriffLookout: 2,
                 roleKnownBySheriff: false,
                 nightActionTarget: null,
-                scoutLookout: 3
+                scoutLookout: 3,
+                hunterTrap: 1,
+                isHunterUsedTrap: false
             };
         });
     }

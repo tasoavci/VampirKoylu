@@ -22,6 +22,8 @@ function Day() {
     const [targetToVest, setTargetToVest] = useState(null);
     const [vampireVotes, setVampireVotes] = useState({});
     const [scoutMessage, setScoutMessage] = useState('')
+    const [vampires, setVampires] = useState([])
+    const [hunter, setHunter] = useState(players.filter(player => player.role === "Hunter" && player.isAlive))
 
     const playerRoles = players.filter(player => player.role !== 'Skip').map(player => {
         let color;
@@ -35,6 +37,10 @@ function Day() {
             case 'Doctor':
                 color = 'green';
                 roleName = 'Doktor';
+                break;
+            case 'Hunter':
+                color = 'green';
+                roleName = 'Vampir Avcısı';
                 break;
             case 'Villager':
                 color = 'green';
@@ -95,7 +101,7 @@ function Day() {
     const checkGameOver = () => {
         const livingPlayers = players.filter(player => player.isAlive && player.role !== 'Skip');
         const vampires = livingPlayers.filter(player => player.role === "Vampire");
-        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor" || player.role === "Sheriff" || player.role === "Scout");
+        const villagers = livingPlayers.filter(player => player.role === "Villager" || player.role === "Doctor" || player.role === "Sheriff" || player.role === "Scout" || player.role === "Hunter");
         const survivors = livingPlayers.filter(player => player.role === "Survivor");
         const jesters = livingPlayers.filter(player => player.role === 'Jester');
 
@@ -139,16 +145,21 @@ function Day() {
     useEffect(() => {
         if (currentDay > 0 && isNight === false) {
             const scout = players.find(player => player.role === "Scout");
+            const hunter = players.find(player => player.role === "Hunter")
             if (scout && scout.nightActionTarget !== null) {
                 const targetPlayerIndex = scout.nightActionTarget;
                 const targetPlayer = players[targetPlayerIndex];
                 const actionTargetPlayer = players[targetPlayer.nightActionTarget];
 
-                if (targetPlayer && targetPlayer.nightActionTarget !== null) {
+                if (targetPlayer && targetPlayer.nightActionTarget !== null && (hunter && hunter.nightActionTarget === null)) {
                     if (actionTargetPlayer) {
                         setScoutMessage(`Bu gece izcinin izlediği oyuncu ${actionTargetPlayer.name} oyuncusuna gitti.`);
                         scout.nightActionTarget = null;
                     }
+                }
+                else if (hunter && hunter.nightActionTarget !== null) {
+                    setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
+                    scout.nightActionTarget = null;
                 } else {
                     setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
                     scout.nightActionTarget = null;
@@ -299,15 +310,127 @@ function Day() {
             setSeeNightAction(false);
         }
     };
+    function findVampires() {
+        const vampireList = players.filter(player => player.role === "Vampire" && player.isAlive);
+        setVampires(vampireList);
+    }
+    function findHunter() {
+        const hunterPlayer = players.filter(player => player.role === "Hunter" && player.isAlive);
+        setHunter(hunterPlayer.length > 0 ? hunterPlayer : null);
+    }
+    useEffect(() => {
+        findHunter()
+        findVampires()
+    }, [currentPlayerIndex])
 
     const handleEndNight = () => {
+        // console.log(hunter[0].isHunterUsedTrap)
+        if (hunter !== null && hunter[0].isHunterUsedTrap) {
+            const hunterTarget = hunter[0].nightActionTarget;
+
+            if (vampires.length > 1) {
+                const targetCounts = vampires.reduce((acc, vampire) => {
+                    const target = vampire.nightActionTarget;
+                    if (acc[target]) {
+                        acc[target]++;
+                    } else {
+                        acc[target] = 1;
+                    }
+                    return acc;
+                }, {});
+
+                const targets = Object.keys(targetCounts);
+                const majorityTarget = targets.find(target => targetCounts[target] > 1);
+
+                let selectedTarget;
+
+                if (majorityTarget) {
+                    selectedTarget = majorityTarget;
+                } else {
+                    selectedTarget = targets[Math.floor(Math.random() * targets.length)];
+                }
+
+                if (selectedTarget == hunterTarget) {
+                    setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
+                    Swal.fire({
+                        title: 'Oyun Sonu',
+                        html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                        <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+                        <p>Vampirler vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için tüm vampiler öldü ve köylüler kazandı.</p>
+                        <p>Gün Sayısı: ${currentDay}</p>
+                        <ul>${playerRoles}</ul>
+                        </div>`,
+                        confirmButtonText: 'Tamam',
+                    });
+                    return router.push('/');
+                } else {
+                    hunter[0].isHunterUsedTrap = false
+                }
+            } else {
+                const hunterTargetedByVampires = vampires.some(vampire => vampire.nightActionTarget === hunterTarget);
+                if (hunterTargetedByVampires) {
+                    setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
+                    Swal.fire({
+                        title: 'Oyun Sonu',
+                        html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                        <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+                        <p>Vampir vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için vampir öldü ve köylüler kazandı.</p>
+                        <p>Gün Sayısı: ${currentDay}</p>
+                        <ul>${playerRoles}</ul>
+                        </div>`,
+                        confirmButtonText: 'Tamam',
+                    });
+                    return router.push('/');
+                } else {
+                    hunter[0].isHunterUsedTrap = false
+                }
+            }
+        }
         if (targetToKill.length > 0) {
             const uniqueTargets = [...new Set(targetToKill)];
-            if (uniqueTargets.length === 1) {
 
+            // if (hunter[0].isHunterUsedTrap) {
+            //     const hunterTarget = hunter[0].nightActionTarget;
+            //     if (vampires.length > 1) {
+            //         const randomVampire = vampires[Math.floor(Math.random() * vampires.length)];
+            //         const randomVampireTarget = randomVampire.nightActionTarget;
+            //         if (randomVampireTarget === hunterTarget) {
+            //             setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
+            //             Swal.fire({
+            //                 title: 'Oyun Sonu',
+            //                 html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+            //                 <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+            //                 <p>Vampirler vampir avcısının evine gitti ve vampir avcısı tuzak kurduğu için tüm vampiler öldü.</p>
+            //                 <p>Gün Sayısı: ${currentDay}</p>
+            //                 <ul>${playerRoles}</ul>
+            //                 </div>`,
+            //                 confirmButtonText: 'Tamam',
+            //             })
+            //             return router.push('/')
+            //         }
+            //     } else {
+            //         const hunterTargetedByVampires = vampires.some(vampire => vampire.nightActionTarget === hunterTarget);
+            //         if (hunterTargetedByVampires) {
+            //             setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
+            //             Swal.fire({
+            //                 title: 'Oyun Sonu',
+            //                 html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+            //                 <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+            //                 <p>Vampir vampir avcısının evine gitti ve vampir avcısı tuzak kurduğu için tüm vampiler öldü.</p>
+            //                 <p>Gün Sayısı: ${currentDay}</p>
+            //                 <ul>${playerRoles}</ul>
+            //                 </div>`,
+            //                 confirmButtonText: 'Tamam',
+            //             })
+            //             return router.push('/')
+
+            //         }
+            //     }
+            // }
+
+            if (uniqueTargets.length === 1) {
                 const targetIndex = uniqueTargets[0];
                 if ((targetIndex === targetToSave) || (targetIndex === targetToVest)) {
-                    // setNightMessage(`Bu gece kimse ölmedi.`);
                     setNightMessage(`
                     <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
                     <ul>
@@ -408,7 +531,6 @@ function Day() {
             }
         }
 
-
         setIsNight(false);
         setCurrentPlayerIndex(0);
         setCurrentDay(currentDay + 1);
@@ -503,6 +625,27 @@ function Day() {
         }
         handleNextPlayer()
     }
+
+    const handleHunterTrap = (targetIndex) => {
+        console.log(players[targetIndex].role)
+        if (players[targetIndex].role === 'Hunter' && players[targetIndex].hunterTrap > 0) {
+            setPlayers(prevPlayers => prevPlayers.map((player, index) =>
+                index === currentPlayerIndex ? { ...player, nightActionTarget: targetIndex } : player
+            ));
+            setPlayers(prevPlayers =>
+                prevPlayers.map((p, idx) =>
+                    idx === currentPlayerIndex ? { ...p, hunterTrap: p.hunterTrap - 1 } : p
+                )
+            );
+            setPlayers(prevPlayers =>
+                prevPlayers.map((p, idx) =>
+                    idx === currentPlayerIndex ? { ...p, isHunterUsedTrap: true } : p
+                )
+            );
+        }
+        handleNextPlayer();
+    }
+
     function categorizeRole(role) {
         switch (role) {
             case 'Doctor':
@@ -574,16 +717,6 @@ function Day() {
                     {players[currentVoterIndex].role === 'Skip' &&
                         <p className='text-lg mb-4'>Oylama bitti</p>
                     }
-                    {/* <div className='w-1/2'>
-                        {players.map((player, index) => (
-                            <button key={player.name}
-                                onClick={() => handleVote(player.name)}
-                                disabled={!player.isAlive || index === currentVoterIndex || players[currentVoterIndex].role === 'Skip'}
-                                className={`${index === currentVoterIndex || players[currentVoterIndex].role === 'Skip' ? 'bg-blue-500/10' : ''} ${!player.isAlive ? 'bg-red-500/30' : ''} my-2 bg-blue-500 min-w-full text-white font-bold py-2 px-4 rounded`}>
-                                {player.role !== 'Skip' ? 'Oy Ver:' : ''} {player.name} ({votes[player.name] || 0})
-                            </button>
-                        ))}
-                    </div> */}
                     <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                         {players.map((player, index) => (
                             <div key={player.name} className='bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center'>
@@ -712,7 +845,7 @@ function Day() {
                                 {currentPlayer.isSelfHealed &&
                                     <h1 className='text-xl my-2 text-red-500 text-center'>Kendini koruma hakkın kalmadı</h1>
                                 }
-                                <h3 className="mb-2">Birini koru:</h3>
+                                <h3 className="mb-2 text-center">Birini koru:</h3>
                                 <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
                                     {players.map((player, index) => (
                                         <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
@@ -926,6 +1059,56 @@ function Day() {
                                                 disabled={player.role === 'Skip' || currentPlayerIndex === index || players[currentPlayerIndex].scoutLookout === 0}
                                                 onClick={() => handleScoutLookout(index)}
                                                 className={`${player.role === 'Skip' ? 'hidden' : ''} ${`${currentPlayerIndex === index || players[currentPlayerIndex].scoutLookout === 0 ? 'bg-green-500/10' : ''}`} bg-green-500 w-full min-w-40 text-white font-bold py-2 px-4 rounded my-2`}>
+                                                {player.role === 'Skip' ? '' : player.name}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </>
+                        )}
+                        {currentPlayer.role === 'Hunter' && currentPlayer.isAlive && seeNightAction && (
+                            <>
+                                <div className='flex items-center justify-center flex-col'>
+                                    <h1 className='text-green-500 text-2xl text-center'>{characters[4].name}</h1>
+                                    <Image height={80} width={80} className='h-20 w-20 rounded-full' src={characters[4].image} alt={characters[4].type} />
+                                    {currentPlayer.hunterTrap > 0 &&
+                                        <h2 className='text-center text-lg mx-5 mt-2'>Tuzak kur:</h2>
+                                    }
+                                    <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-2 mt-4">
+                                        {currentPlayer.hunterTrap > 0 &&
+                                            <>
+                                                <h1 className="text-lg font-semibold text-gray-700 text-center">Tuzak sayısı: <span className="text-green-600">{currentPlayer.hunterTrap ? currentPlayer.hunterTrap : 0}</span></h1>
+                                                <div className="flex gap-2 mt-4 items-center justify-center ">
+                                                    <button onClick={() => handleHunterTrap(currentPlayerIndex)} className="bg-green-500 text-white font-bold py-2 px-4 rounded text-center">Tuzak Kur</button>
+                                                    <button onClick={handleNextPlayer} className="bg-gray-500 text-white font-bold py-2 px-2 rounded text-center">Kurma</button>
+                                                </div>
+                                            </>
+                                        }
+                                        {currentPlayer.hunterTrap === 0 &&
+                                            <h1 className="text-lg font-semibold text-red-700 text-center">Tüm tuzaklar tükendi</h1>
+                                        }
+
+
+                                    </div>
+                                    {currentPlayer.hunterTrap === 0 &&
+                                        <h2 className='text-center text-lg mx-5'>Aşağıdaki tuşlara basarak sıranı geçebilirsin</h2>
+                                    }
+
+                                </div>
+                                <div className='w-full flex flex-wrap justify-center items-center gap-4 p-4'>
+                                    {players.map((player, index) => (
+                                        <div key={player.name} className={`bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm w-44 flex flex-col items-center ${player.role === 'Skip' ? 'hidden' : ''}`}>
+                                            {player.role !== 'Skip' && player.isAlive &&
+                                                <Image height={96} width={96} src={`/anonymous-woman.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            {player.role !== 'Skip' && !player.isAlive &&
+                                                <Image height={96} width={96} src={`/tombstone.png`} alt={player.name} className='w-24 h-24 rounded-full mb-3' />
+                                            }
+                                            <button key={index}
+                                                disabled={player.role === 'Skip'}
+                                                onClick={handleNextPlayer}
+                                                className={`${player.role === 'Skip' ? 'hidden' : ''} bg-green-500 w-full min-w-40  text-white font-bold py-2 px-4 rounded my-2`}>
                                                 {player.role === 'Skip' ? '' : player.name}
                                             </button>
                                         </div>

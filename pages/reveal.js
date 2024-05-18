@@ -70,11 +70,6 @@ function RoleReveal() {
                                     </ul>
                                 </div>
                             )}
-                            {/* <ul className="text-center mx-auto mb-4">
-                                {currentCharacter.duties.map(duty => (
-                                    <li key={duty}>{duty}</li>
-                                ))}
-                            </ul> */}
                             <button onClick={handleNext} className="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white font-bold transition-colors">
                                 Sıradaki
                             </button>

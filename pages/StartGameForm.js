@@ -10,15 +10,16 @@ function StartGameForm({ onStartGame }) {
     const [numDoctor, setNumDoctor] = useState(1)
     const [numSheriff, setNumSheriff] = useState(0)
     const [numScout, setNumScout] = useState(0)
+    const [numHunter, setNumHunter] = useState(0)
     const [numNeutral, setNumNeutral] = useState(playerCount >= 7 ? 1 : 0)
     const [neutralArray, setNeutralArray] = useState([0, 1, 2])
-    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff + numScout))
+    const [numVillager, setNumVillager] = useState(playerCount - (numVampires + numNeutral + numDoctor + numSheriff + numScout + numHunter))
     const router = useRouter()
 
     useEffect(() => {
         updateVillagerCount()
         updateNeutralArray()
-    }, [numDoctor, numNeutral, numVampires, numSheriff, numScout, playerCount])
+    }, [numDoctor, numNeutral, numVampires, numSheriff, numScout, numHunter, playerCount])
     const handlePlayerCountChange = event => {
         const count = parseInt(event.target.value, 10);
         setPlayerCount(count);
@@ -28,7 +29,7 @@ function StartGameForm({ onStartGame }) {
         updateVillagerCount()
     };
     const updateVillagerCount = () => {
-        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff + numScout));
+        setNumVillager(playerCount - (numVampires + numDoctor + numNeutral + numSheriff + numScout + numHunter));
     };
     const updateNeutralArray = () => {
         setNeutralArray(playerCount === 7 ? [0, 1] : [0, 1, 2])
@@ -42,11 +43,9 @@ function StartGameForm({ onStartGame }) {
     const handleVampiresChange = event => {
         setNumVampires(parseInt(event.target.value, 10));
     };
-
     const handleDoctorChange = event => {
         setNumDoctor(parseInt(event.target.value, 10));
     };
-
     const handleNeutralChange = event => {
         setNumNeutral(parseInt(event.target.value, 10));
     };
@@ -56,11 +55,14 @@ function StartGameForm({ onStartGame }) {
     const handleScoutChange = event => {
         setNumScout(parseInt(event.target.value, 10));
     };
+    const handleHunterChange = event => {
+        setNumHunter(parseInt(event.target.value, 10));
+    };
 
 
     const handleSubmit = event => {
         event.preventDefault();
-        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral, numSheriff, numScout);
+        onStartGame([...playerNames, 'Boş Oy'], numVampires, numDoctor, numNeutral, numSheriff, numScout, numHunter);
 
     };
 
@@ -168,6 +170,25 @@ function StartGameForm({ onStartGame }) {
                         >
                             {[0, 1].map(scoutCount => (
                                 <option key={scoutCount} value={scoutCount}>{scoutCount}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>}
+            {playerCount >= 6 &&
+                <div className="mb-4 flex flex-col">
+                    <label htmlFor="numHunter" className="block text-green-700 text-sm font-bold mb-2">
+                        Vampir Avcısı Sayısı:
+                    </label>
+                    <div className='flex items-center justify-center gap-2'>
+                        <Image width={50} height={50} src={'/vampire-hunter.png'} alt='vampir-avcisi' className='object-contain rounded-full' />
+                        <select
+                            id="numHunter"
+                            value={numHunter}
+                            onChange={handleHunterChange}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-green-700 leading-tight focus:outline-none focus:shadow-outline"
+                        >
+                            {[0, 1].map(hunterCount => (
+                                <option key={hunterCount} value={hunterCount}>{hunterCount}</option>
                             ))}
                         </select>
                     </div>
