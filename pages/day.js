@@ -23,6 +23,7 @@ function Day() {
     const [vampireVotes, setVampireVotes] = useState({});
     const [scoutMessage, setScoutMessage] = useState('')
     const [vampires, setVampires] = useState([])
+    const [survivors, setSurvivors] = useState([])
     const [hunter, setHunter] = useState(players.filter(player => player.role === "Hunter" && player.isAlive))
 
     const playerRoles = players.filter(player => player.role !== 'Skip').map(player => {
@@ -146,21 +147,26 @@ function Day() {
         if (currentDay > 0 && isNight === false) {
             const scout = players.find(player => player.role === "Scout");
             const hunter = players.find(player => player.role === "Hunter")
+            const doctor = players.find(player => player.role === "Doctor")
             if (scout && scout.nightActionTarget !== null) {
                 const targetPlayerIndex = scout.nightActionTarget;
                 const targetPlayer = players[targetPlayerIndex];
                 const actionTargetPlayer = players[targetPlayer.nightActionTarget];
-
-                if (targetPlayer && targetPlayer.nightActionTarget !== null && (hunter && hunter.nightActionTarget === null)) {
+                if (hunter && hunter.nightActionTarget !== null) {
+                    setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
+                    scout.nightActionTarget = null;
+                }
+                else if (doctor && doctor.nightActionTarget !== null) {
+                    setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
+                    scout.nightActionTarget = null;
+                }
+                else if (targetPlayer && targetPlayer.nightActionTarget !== null) {
                     if (actionTargetPlayer) {
                         setScoutMessage(`Bu gece izcinin izlediği oyuncu ${actionTargetPlayer.name} oyuncusuna gitti.`);
                         scout.nightActionTarget = null;
                     }
                 }
-                else if (hunter && hunter.nightActionTarget !== null) {
-                    setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
-                    scout.nightActionTarget = null;
-                } else {
+                else {
                     setScoutMessage(`Bu gece izcinin izlediği oyuncu evinde kaldı.`);
                     scout.nightActionTarget = null;
                 }
@@ -318,9 +324,14 @@ function Day() {
         const hunterPlayer = players.filter(player => player.role === "Hunter" && player.isAlive);
         setHunter(hunterPlayer.length > 0 ? hunterPlayer : null);
     }
+    function findSurvivors() {
+        const survivorPlayers = players.filter(player => player.role === "Survivor" && player.isAlive);
+        setSurvivors(survivorPlayers.length > 0 ? survivorPlayers : null);
+    }
     useEffect(() => {
         findHunter()
         findVampires()
+        findSurvivors()
     }, [currentPlayerIndex])
 
     const handleEndNight = () => {
@@ -415,11 +426,11 @@ function Day() {
 
             if (uniqueTargets.length === 1) {
                 const targetIndex = uniqueTargets[0];
-                console.log('vampirin hedefi:', targetIndex)
-                console.log('hunter var mi?:', hunter !== null)
-                console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
-                console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === targetIndex)
-                console.log('hunterin hedefi:', hunter[0].nightActionTarget)
+                // console.log('vampirin hedefi:', targetIndex)
+                // console.log('hunter var mi?:', hunter !== null)
+                // console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
+                // console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === targetIndex)
+                // console.log('hunterin hedefi:', hunter[0].nightActionTarget)
                 if (targetIndex === players.length - 1) {
                     // setNightMessage('Bu gece kimse ölmedi.');
                     setNightMessage(`
@@ -438,19 +449,36 @@ function Day() {
                     const hunterTarget = hunter[0].nightActionTarget;
 
                     if (targetIndex === hunterTarget) {
-                        // Vampir hunter'ın hedefini öldürmeye çalışıyor, hunter tuzak kurmuş
                         setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
-                        Swal.fire({
-                            title: 'Oyun Sonu',
-                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                        if (survivors !== null && survivors.length > 0) {
+                            Swal.fire({
+                                title: 'Oyun Sonu',
+                                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                                <div style="display:flex; gap:4px;">
+                                <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+                                <img src="/survivor.png" style="width:100px; height:100px;">
+                                </div> 
+                            <p>Vampir vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için vampir öldü. Köylüler ve survivor kazandı.</p>
+                            <p>Gün Sayısı: ${currentDay}</p>
+                            <ul>${playerRoles}</ul>
+                            </div>`,
+                                confirmButtonText: 'Tamam',
+                            });
+                            return router.push('/');
+                        } else {
+                            Swal.fire({
+                                title: 'Oyun Sonu',
+                                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                             <img src="/vampire-hunter.png" style="width:100px; height:100px;">
                             <p>Vampir vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için vampir öldü ve köylüler kazandı.</p>
                             <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
                             </div>`,
-                            confirmButtonText: 'Tamam',
-                        });
-                        return router.push('/');
+                                confirmButtonText: 'Tamam',
+                            });
+                            return router.push('/');
+                        }
+
                     }
                 }
                 else if ((targetIndex === targetToSave) || (targetIndex === targetToVest)) {
@@ -496,7 +524,6 @@ function Day() {
                 console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === randomTargetIndex + 1)
                 console.log('hunterin hedefi:', hunter[0].nightActionTarget)
                 if (randomTargetIndex === players.length - 1) {
-                    // setNightMessage('Bu gece kimse ölmedi.');
                     setNightMessage(`
                     <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
                     <ul>
@@ -513,17 +540,34 @@ function Day() {
                     const hunterTarget = hunter[0].nightActionTarget;
                     if (randomTargetIndex === hunterTarget) {
                         setVampires(vampires.map(vampire => ({ ...vampire, isAlive: false })));
-                        Swal.fire({
-                            title: 'Oyun Sonu',
-                            html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                        if (survivors !== null && survivors.length > 0) {
+                            Swal.fire({
+                                title: 'Oyun Sonu',
+                                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                               <div style="display:flex; gap:4px;">
+                               <img src="/vampire-hunter.png" style="width:100px; height:100px;">
+                               <img src="/survivor.png" style="width:100px; height:100px;">
+                               </div> 
+                            <p>Vampir vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için vampir öldü. Köylüler ve survivor kazandı.</p>
+                            <p>Gün Sayısı: ${currentDay}</p>
+                            <ul>${playerRoles}</ul>
+                            </div>`,
+                                confirmButtonText: 'Tamam',
+                            });
+                            return router.push('/');
+                        } else {
+                            Swal.fire({
+                                title: 'Oyun Sonu',
+                                html: `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                             <img src="/vampire-hunter.png" style="width:100px; height:100px;">
                             <p>Vampirler vampir avcısının evine gitti ama vampir avcısı tuzak kurduğu için vampirler öldü ve köylüler kazandı.</p>
                             <p>Gün Sayısı: ${currentDay}</p>
                             <ul>${playerRoles}</ul>
                             </div>`,
-                            confirmButtonText: 'Tamam',
-                        });
-                        return router.push('/');
+                                confirmButtonText: 'Tamam',
+                            });
+                            return router.push('/');
+                        }
                     }
                 }
                 else if ((randomTargetIndex === targetToSave) || (randomTargetIndex === targetToVest)) {
