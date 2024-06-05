@@ -28,6 +28,8 @@ function StartGameForm({ onStartGame }) {
         setPlayerNames(Array(count).fill(''));
         setNumVampires(count >= 11 ? 3 : (count >= 8 ? 2 : 1));
         setNumNeutral(count >= 7 ? 1 : 0);
+        setNumHunter(count < 6 ? 0 : numHunter)
+        setNumScout(count < 6 ? 0 : numScout)
         updateVillagerCount()
     };
     const updateVillagerCount = () => {
