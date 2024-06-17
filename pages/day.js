@@ -518,11 +518,11 @@ function Day() {
                 }
             } else {
                 const randomTargetIndex = uniqueTargets[Math.floor(Math.random() * uniqueTargets.length)];
-                console.log(randomTargetIndex)
-                console.log('hunter var mi?:', hunter !== null)
-                console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
-                console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === randomTargetIndex + 1)
-                console.log('hunterin hedefi:', hunter[0].nightActionTarget)
+                // console.log(randomTargetIndex)
+                // console.log('hunter var mi?:', hunter !== null)
+                // console.log('hunter tuzak kullandi mi?:', hunter[0].isHunterUsedTrap)
+                // console.log('vampirlerin hedefi hunter mi?:', hunter[0].nightActionTarget === randomTargetIndex + 1)
+                // console.log('hunterin hedefi:', hunter[0].nightActionTarget)
                 if (randomTargetIndex === players.length - 1) {
                     setNightMessage(`
                     <p class="mb-4"><strong>Bu gece kimse ölmedi.</strong></p>
